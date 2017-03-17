@@ -1,0 +1,54 @@
+EMC:SHARE:Employee
+
+Direct Manager_Login : 536870931
+City : 536870925
+Direct Manager : 536870929
+Employee ID : 536871982
+First Name : 536870915
+Pager Details2 : 536870946
+Pager Provider : 536870947
+Organization : 536870951
+Privilege : 536870955
+Group Name : 536870918
+Status : 7
+Vendor : 536870924
+zConsole Qualifier : 536870972
+Pager Pin  : 536870949
+Pager Details : 536870945
+zRecord Exists : 600000630
+Pager Phone : 536870948
+Status History : 15
+zConsole Not A Child : 536870934
+Password : 102
+Autosync with : 536871984
+Assigned To : 4
+Show_Feature : 536870938
+Email Address : 536870940
+Senior Manager_Login : 536870932
+Short Description : 8
+Pager Email : 536870950
+Phone Number : 536870936
+Show_Task : 536870939
+Request ID : 1
+User Type : 600000631
+Submitter : 2
+Is_SeniorManager : 536870935
+Login : 536870922
+Full Name : 536870917
+User Menu Groups : 536870944
+Tab Focus : 536870978
+Show_Issue : 536870937
+Last Modified By : 536870943
+Modified Date : 536870941
+Site Name : 536870920
+Last Name : 536870916
+Last Name Initial : 536870914
+System Last Modified By : 5
+Senior Manager : 536870930
+Create Date : 3
+Function Name : 536870919
+zConsole Qualifier2 : 536870974
+Console View : 300592700
+System Modified Date : 6
+Menu Placement : 536870921
+zConsole Qualifier3 : 536870953

@@ -1,0 +1,157 @@
+EMC:Issue_Assoc_Instance_join
+
+Requirements : 536871403
+Assigned-to Full Name : 600000701
+Verification Procedure : 536870930
+ckbx_Not A Child : 536871535
+Fix : 536871381
+zAttribute 5 Label : 600000254
+HBA : 700000303
+ClusterA_ModemNum_Pass : 536871326
+Last Promoted Build : 536876196
+External Tracking Systems : 536871500
+Reproducible : 536871544
+# of Regressions Caused : 536871519
+Client OS : 536871095
+DU/DL : 536876225
+Assigned-to Function : 536871387
+Source Branch : 600004833
+Note Details : 536871085
+Customer Issue : 600000009
+Attribute 7 : 536870924
+Assigned-to Site : 536871384
+Full Details : 536871613
+Reported by Site : 536871383
+New Customer : 536871476
+Reported by Function : 536871389
+Customer Name : 536871409
+Assigned-to : 4
+Major Area : 536871412
+zAttribute 7 Label : 536876195
+Patch Candidate : 536871603
+Modified Date : 536870955
+SDK Version : 536871317
+Release Note Needed : 536870967
+Server Hardware : 536871614
+ClusterA_Serial_Number : 536871328
+Object Entry ID : 536870926
+Deferred Issue : 536876186
+Status-History : 15
+Entry-Id : 536870938
+zAttribute 4 Label : 600000253
+Array Type : 700000101
+Priority : 536870922
+Quick Summary of Fix : 536871402
+Version Found : 536870914
+Assignee Group : 112
+Platform : 600000519
+Type : 536871084
+Script Name : 536871436
+Reported by Group : 536871388
+Justification : 536871546
+ClusterA_Description : 536871346
+Version Verified : 536870919
+Blocking : 700000320
+Remote Access Type : 536871318
+Short Problem Description : 536871400
+Escalate Details : 536870953
+zAttribute 1 Label : 600000250
+Regression Bug # : 536870936
+Test Suite Changes Needed : 536871502
+HBA Driver/Firmware : 536871290
+Request ID : 1
+Brief Description of Problem : 536870918
+Client Hardware : 536871288
+Post Mortem Ready : 536871473
+Array Serial Number : 536876185
+Hardware/Other : 536871364
+Product Family : 536871628
+Last Modified By : 536870950
+Weight : 536871549
+User-Visible Symptom : 536871380
+Object ID : 600000200
+DU/DL Details : 536876231
+Asoc Req ID : 536870943
+Primus ID : 536870933
+Estimated Checkin Date : 536871606
+Related Parent Bug # : 536870937
+Clarify Priority : 536870931
+Long Term Enhancements : 536871404
+Last-modified-by : 536871392
+Object Label : 536870929
+Escalate by : 536870954
+Privilege : 536870934
+Assigned-to Group : 536871379
+Prime Bug # : 536870928
+zAttribute 3 Label : 600000252
+Status : 7
+Regression Caused : 536870947
+Flare Revision : 536871292
+Escalate : 536870951
+Average File Size : 536871324
+Modified-date : 536871390
+Customer Contact : 536871310
+Additional References : 536870915
+Relationship Type : 536870962
+Phone : 536871316
+Release When First Introduced : 536871641
+Problem Resolution : 536870913
+Product Area : 8
+Keyword Notes : 600000632
+Customer Phone : 536871311
+How Found : 536871352
+Primus Needed : 536870966
+Root Cause Analysis Notes : 536871405
+Time Sent to TCE Engineering : 536871357
+EE Owner : 536871373
+Customer Issue Reviewed : 536871485
+Submitter : 2
+Version When First Introduced : 536871426
+User Full Name : 536871372
+Classification : 536870927
+Customer State : 536876190
+External Tracking ID # : 536871498
+Customer Impact : 536871548
+Root Cause Category : 536871470
+Keywords : 536871368
+Escalate Reason : 536870952
+Menu_P : 536870968
+Location : 536871309
+Reason for Defect Escape : 536871469
+Type Code : 536871447
+Workaround : 536870920
+Releases Built-in : 536871455
+Status Details : 536870941
+Parent Request ID : 536870959
+Time of Call/Page from TS2 : 536871354
+Create-date : 3
+Usability Impact : 536871580
+Sent to TCE Engineering : 536871356
+Attrubute 5 : 536870923
+Attrubute 4 : 536870948
+Attrubute 3 : 536870921
+Attrubute 2 : 536870916
+Attrubute 1 : 536870944
+Product : 536871386
+Root Cause : 536871467
+Tape Drive Name : 536876189
+Email : 536871592
+EMC Onsite Contact : 536871315
+Related Product Release : 536870917
+zAttribute 2 Label : 600000251
+Product Release : 536870940
+Regression Risk : 536871425
+Dup Parent ID : 536871480
+Post Mortem Complete : 536871474
+Security Issue : 700000321
+# of Duplicates : 536870945
+Post Mortem Due Date : 536871471
+Backup Application Name  : 536871523
+Last Status Change : 536871416
+Backup Application Version  : 536871524
+Server OS : 536871097
+Clarify ID : 536870932
+Legacy Id : 536871621
+External Tracking Details : 536871573
+Reported by : 600000700
+Regression : 536870935

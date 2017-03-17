@@ -1,0 +1,56 @@
+{
+  "report name":"Common Platform",
+  "assinged to manager param map":{
+     "Senior Manager" : [ "\"Pu, John\""],
+     "Status" : ["\"Open\"","\"Waiting on Originator\"","\"In-progress\""],
+     "Type":["\"Bug\""],
+     "Parent Bug #": ["\"$NULL$\""],
+     "Priority":["\"P00\"","\"P01\"","\"P02\""],
+     "Product Family": ["\"Unified Systems\""],
+     "No Product Family" : ["\"USD Test\"", "\"CTD SSIE\""],
+     "Product Release":["\"Merlin\"",
+                        "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
+                        "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
+                        "\"Bearcat\"","\"Bearcat SP1\"",
+                        "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\""]
+  },
+  "reported by manager param map":{
+     "Senior Manager" : [ "\"Pu, John\""],
+     "Status" : ["\"Fixed\""],
+     "Status Details":["\"Test-ready\""],
+     "Type":["\"Bug\""],
+     "Parent Bug #": ["\"$NULL$\""],
+     "Priority":["\"P00\"","\"P01\"","\"P02\""],
+     "Product Family": ["\"Unified Systems\""],
+     "No Product Family" : ["\"USD Test\"", "\"CTD SSIE\""],
+     "Product Release":["\"Merlin\"",
+                        "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
+                        "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
+                        "\"Bearcat\"","\"Bearcat SP1\"",
+                        "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\""]
+  },
+  "audit trail param map":{
+      "Attribute Label":["\"Major Area\""],
+      "Type":["\"Bug\""],
+      "Priority":["\"P00\"","\"P01\"","\"P02\""],
+      "Product Release":["\"Merlin\"",
+                         "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
+                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
+                         "\"Bearcat\"","\"Bearcat SP1\"",
+                         "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\""]
+  },
+  "major areas":{
+      "Platform Core":["\"Platform Core\""],
+      "SLICs, Protocols and Backend":["\"Back End Protocols\"","\"Block Front End Protocols\"","\"Host access\"",
+                                      "\"Hostside\"","\"IoRedirector\"","\"Network Config\"","\"Network\"","\"SLIC Management\""]
+  },
+  "major area managers":{
+      "Platform Core":["\"Ramadurai, Balaji\"","\"Hanna, Bill\"","\"Jayanty, Ramanamurthy\"","\"Jones, Greg\"", "\"Zhang, Haohan\"","\"Li, Leon\""],
+      "SLICs Protocols and Backend":["\"Dobkowski, Konrad\"","\"Askarzadeh, Fardad\"","\"Manning, Mike\"","\"Breton, Peter\"","\"Karner, Joe\"",
+                                     "\"Liu, Andy(Yang)\"","\"Wang, Eric X\"","\"Tang, Guifeng\"","\"Chang, Rui\""]
+  },
+  "report releases":["Merlin"],
+  "to":"Winnie.Fan@emc.com",
+  "cc":"Winnie.Fan@emc.com",
+  "bcc":"Winnie.Fan@emc.com"
+}

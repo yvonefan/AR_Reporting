@@ -1,0 +1,118 @@
+EMC:Issue Notes Join
+
+Requirements : 536871403
+Assigned-to Full Name : 600000701
+Verification Procedure : 536870930
+ckbx_Not A Child : 536871535
+HBA : 700000303
+New Customer : 536871476
+External Tracking Systems : 536871500
+Reproducible : 536871544
+# of Regressions Caused : 536871519
+Client OS : 536871095
+DU/DL : 536876225
+Additional References : 536870920
+Created by : 2
+Version Fixed : 536870923
+Source Branch : 600004833
+Assigned-to Site : 536870966
+Note Details : 536870917
+External Tracking Details : 536871573
+Full Details : 536871613
+Reported by Site : 536870960
+Post Mortem Due Date : 536871471
+Customer Name : 536871409
+Major Area : 536871412
+Patch Candidate : 536871603
+SDK Version : 536871317
+Server Hardware : 536871614
+Deferred Issue : 536876186
+Status-History : 15
+Entry-Id : 536870913
+Array Type : 700000101
+Priority : 536870922
+Quick Summary of Fix : 536871402
+Version Found : 536870916
+Assignee Group : 112
+Type : 536871084
+Script Name : 536871436
+Reported by Group : 536870956
+Blocking : 700000320
+Remote Access Type : 536871318
+Short Problem Description : 536871400
+Escalate Details : 536870953
+Note Details Display : 536871085
+Regression Bug # : 536870936
+Test Suite Changes Needed : 536871502
+HBA Driver/Firmware : 536871290
+Request ID : 1
+Client Hardware : 536871288
+Post Mortem Ready : 536871473
+Hardware/Other : 536871364
+Risk of Recurrence : 536871425
+Full Name : 536870919
+Product Family : 536871628
+Weight : 536871549
+Earliest Dup Bug # : 536871483
+Object ID : 600000200
+DU/DL Details : 536876231
+Primus ID : 536870933
+Estimated Checkin Date : 536871606
+Clarify Priority : 536870931
+Long Term Enhancements : 536871404
+Last-modified-by : 536871392
+Escalate by : 536870954
+Assigned-to Group : 536870962
+Status : 7
+Flare Revision : 536871292
+Escalate : 536870951
+Average File Size : 536871324
+Modified-date : 536871390
+Customer Contact : 536871310
+Assigned-to Function : 536870964
+Prime Bug # : 536870928
+Phone : 536871316
+Release When First Introduced : 536871641
+Problem Resolution : 536870921
+Product Area : 8
+Customer Phone : 536871311
+How Found : 536871352
+Primus Needed : 536871609
+Root Cause Analysis Notes : 536871405
+Request ID2 : 536870915
+Summary : 536870918
+Clarify ID : 536870932
+Version When First Introduced : 536871426
+Customer Issue : 600000009
+Classification : 536870927
+Platform : 600000519
+External Tracking ID # : 536871498
+Customer Impact : 536871548
+Entry ID : 536870914
+Root Cause Category : 536871470
+Keywords : 536871368
+Escalate Reason : 536870952
+Location : 536871309
+Reason for Defect Escape : 536871469
+Workaround : 600004842
+Status Details : 536870941
+Create-date : 3
+Usability Impact : 536871580
+Root Cause : 536871467
+Product : 536871386
+Justification : 536871546
+Email : 536871592
+EMC Onsite Contact : 536871315
+Regression Notes : 536870937
+Product Release : 536870940
+Post Mortem Complete : 536871474
+Security Issue : 700000321
+# of Duplicates : 536870945
+Reported by Function : 536870958
+EE Owner : 536871373
+Server OS : 536871097
+Customer Issue Reviewed : 536871485
+Note Create Date : 600004859
+Legacy Id : 536871621
+Reported by : 600000700
+Regression : 536870935
