@@ -1,19 +1,19 @@
-
-Python Version: 2.7.9
-
-Python Extended libraries:
-    matplotlib (1.5.3)
+Need to prepare the environment:
+1. Python Version: 2.7.12   32bit
+2. Remedy: 7604SP5, only has 32bit, so the python and all libs should be 32bit.
+3. Python Extended libraries: all the libs should be 32bit.
+    matplotlib (1.5.1)
     pandas (0.18.1)
     pyars (1.8.2)
     pywin32 (220)
     xlrd (1.0.0)
-    xlwt (0.7.5)
+    xlwt (1.1.2)
     python-ntlm (1.1.0)
     bs4 (0.0.1)
-
+4. office 2010
 
 
 
 Notes:
-    1. Password releated file:  RadarCrawler.py
+    1. Password releated file:  RadarCrawler.py(now Radar has been commented.)
     2. Password releated tool:  Microsoft Outlook
