@@ -45,6 +45,7 @@ dber = DatabaseHelper(logger)
 grapher = GraphHelper(logger)
 strer = StringHelper(logger)
 
+DATE_X_UNIT = 'daily'
 CUR_TIME = int(timer.get_mtime())
 CUR_WEEK_START_TIME = timer.get_week_start(CUR_TIME)
 PRE_DATE_RADAR = timer.mtime_to_radar_date(CUR_TIME - 24*60*60)
@@ -429,9 +430,15 @@ def convert_AR_objs_to_html_table(ar_list, table_name):
         text[len(text)-1].append(obj.create_date_local)
         text[len(text)-1].append(int((timer.get_mtime()-obj.create_date)/(24*60*60)))
     #text = ayer.sort_twod_array_by_col(text,1,11)
+    #now don't need to save it to html since it has already been saved to png.
     return ayer.twod_array_to_html_table(text, table_name, 'Blocking ARs'), text
 
 def refine_twod_array(twod_array):
+    """
+    Coverts the twod_array to one-dimention
+    :param twod_array
+    :return:
+    """
     strer = StringHelper()
     res = list()
     for i in range(0, len(twod_array)):
@@ -642,6 +649,7 @@ def sent_report_email(parammap, files_to_send, bug_releases, additional_body):
             'span{margin-bottom:20px;display:block;font-family:"sans-serif";font-size:14.0pt;}</style>'
     mailer.send_email(parammap['to'], subj, style+body, ifHtmlBody, embed_images, additional_body, parammap['cc'], parammap['bcc'], att)
 
+#get AR related to camap, i.e., classify AR with ca name.
 def count_by_ca_manager(arobjlist, cas, camap):
     res = dict()
     for k in cas:
@@ -724,7 +732,7 @@ def ar_total_in_out_trend_report(parammap, files_to_send):
     title = parammap['report name'].replace(' ', '') + ' Total ARs In/Out Trend'
     lines = ['Total In', 'Total Out']
     save_to_png = pngprefix + '[02]' + parammap["report name"].replace(' ', '') + '_ARs_Total_In_Out_Trend.png'
-    grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 5, 'weekly', save_to_png)
+    grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 5, DATE_X_UNIT, save_to_png)
     files_to_send["image"].append(save_to_png)
 
 def ar_total_age_report(ar_obj_list, parammap, files_to_send):
@@ -746,7 +754,7 @@ def ar_total_trend_report(bugmap, parammap, files_to_send):
     title = parammap['report name'].replace(' ', '') + ' Total ARs Trend'
     lines = ['Total']
     save_to_png = pngprefix + '[04]' + parammap['report name'].replace(' ', '') + '_ARs_Total_Trend.png'
-    grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 20, 'weekly', save_to_png)
+    grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 20, DATE_X_UNIT, save_to_png)
     files_to_send["image"].append(save_to_png)
 
 def ar_direct_manager_report(ar_obj_list, parammap, files_to_send):
@@ -778,6 +786,7 @@ def releases_report(ar_obj_list, parammap, files_to_send):
     logger.debug(cas)
     cammap = ayer.remove_map_quote(parammap['major area managers'])
     for rel in parammap['report releases']:
+        #get all the ar with 'report releases' == rel
         ars = filter_release(ar_obj_list, rel)
         ar_count_map = count_by_ca_manager(ars, cas, cammap)
         logger.debug('ar_count_map is :'+str(ar_count_map))
@@ -831,7 +840,7 @@ def releases_report(ar_obj_list, parammap, files_to_send):
         lines = ['Domain Total']
         title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' ARs Total Trend'
         save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Trend.png'
-        grapher.draw_trent_chart(trend_ca_record_file, lines, title, 14, 4, 20, 'weekly', save_to_png)
+        grapher.draw_trent_chart(trend_ca_record_file, lines, title, 14, 4, 20, DATE_X_UNIT, save_to_png)
         files_to_send["image"].append(save_to_png)
 
         '''
@@ -849,7 +858,7 @@ def releases_report(ar_obj_list, parammap, files_to_send):
         title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' ARs CA Trend'
         lines = cas
         save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Trend_by_CA.png'
-        grapher.draw_trent_chart(trend_ca_record_file, lines, title, 14, 4, 2, "weekly", save_to_png)
+        grapher.draw_trent_chart(trend_ca_record_file, lines, title, 14, 4, 2, DATE_X_UNIT, save_to_png)
         files_to_send["image"].append(save_to_png)
 
         #draw release age report table for per CA
@@ -902,7 +911,7 @@ def releases_trend_report(ar_obj_list, parammap, files_to_send):
         title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' CA ARs Trend'
         lines = cas
         save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Trend_by_CA.png'
-        grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 2, "weekly", save_to_png)
+        grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 2, DATE_X_UNIT, save_to_png)
         files_to_send["image"].append(save_to_png)
 
         #draw release age report table for per CA
@@ -919,10 +928,12 @@ def ar_blocking_report(ar_obj_list, parammap, files_to_send):
     logger.debug("-"*40 + "[ar_blocking_report]" + "-"*40)
     blocking_ar_list = get_blocking_AR(ar_obj_list)
     if len(blocking_ar_list) != 0:
+        #The additional_body is useless, so now don't need to convert_AR_objs_to_html_table.
         additional_body, blocking_text = convert_AR_objs_to_html_table(blocking_ar_list, 'blockings')
+        #just truncate the member of blocking_text
         blocking_text = refine_twod_array(blocking_text)
         title = parammap['report name'].replace(' ', '')+' Blocking ARs'
-        plt, table = grapher.draw_table_first_row_colored(blocking_text, 1*len(blocking_text[0]), 0.5*len(blocking_text), 0.98, True, title, 'left', 10)
+        plt, table = grapher.draw_table_first_row_colored(blocking_text, 1*len(blocking_text[0]), 0.5*len(blocking_text), 0.98, True, title, 'center', 10)
         save_to_png = pngprefix + '[00]' + parammap['report name'].replace(' ', '') + '_ARs_Blocking.png'
         plt.savefig(save_to_png, bbox_inches='tight')
         files_to_send["image"].append(save_to_png)
