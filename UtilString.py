@@ -68,6 +68,11 @@ class StringHelper:
         :param length: length of each line
         :param max_length: maximum length of the result string
         :return: string with each line having specified length and total length smaller than maximum length
+        example:
+            sstr = '[MRQE/SYS][Vitality][Baseline][OB-D1142] VNX_VNXe_CIFS_STRESS failed with syswrite failed for writing file'
+            res = '[MRQE/SYS][Vita-
+            lity][Baseline]-
+            [OB-D11...'
         """
         l = len(sstr)
         if l <= length:

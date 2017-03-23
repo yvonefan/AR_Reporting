@@ -366,7 +366,7 @@ def ar_in_out_report_by_day(parammap, files_to_send):
         csvstr += ',' + str(domain_map[rel]['in_count'][-1]) + ',' + str(domain_map[rel]['out_count'][-1]) + '\n'
         #logger.debug("csvstr : "+str(csvstr))
         update_last_record(record_file, PRE_DATE_LOCAL, csvstr, header)
-        generate_AR_trends_report_data_file(28, record_file, trend_record_file)
+        draw_trent_chart = generate_AR_trends_report_data_file(28, record_file, trend_record_file)
 
         #draw daily in/out summary table
         ar_in_out_summary_report_daily(rel, ca_map, others_map, domain_map, parammap, files_to_send)
@@ -374,10 +374,11 @@ def ar_in_out_report_by_day(parammap, files_to_send):
         ar_in_out_save_to_excel_daily(rel, ca_map, parammap, files_to_send)
 
         #dorw daily in/out total trend chart of domain
+        date_x_unit = calc_date_x_unit(ar_records_cnt)
         title =  parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' ARs In/Out Trend'
         lines = ['Total In', 'Total Out']
         save_to_png = pngprefix + '[10]' + parammap['report name'].replace(' ', '') + '' + rel.replace(' ', '') + '_Total_ARs_In_Out_Trend.png'
-        grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 5, 'weekly', save_to_png)
+        grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
         files_to_send["image"].append(save_to_png)
 
         #dorw daily in/out trend chart by ca
@@ -385,7 +386,7 @@ def ar_in_out_report_by_day(parammap, files_to_send):
                 title = parammap['report name'].replace(' ', '') + ' ' + ca.replace(' ', '') + ' ' + rel.replace(' ', '') + ' ARs In/Out Trend'
                 save_to_png = pngprefix + '[13]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_' + ca.replace(' ', '') + "_In_Out_Trend.png"
                 lines = [ca.replace(' ', '')+' In', ca.replace(' ', '')+' Out']
-                grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 2, "weekly", save_to_png)
+                grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 2, date_x_unit, save_to_png)
                 files_to_send["image"].append(save_to_png)
 
     logger.debug("[daily]ca_map : "+ str(ca_map))
@@ -505,22 +506,24 @@ def update_last_record(file, timestamp, csvstr, header=''):
         myfile.write(csvstr)
         myfile.close()
 
-def generate_AR_trends_report_data_file(num,file_origin,file):
+def generate_AR_trends_report_data_file(num, file_origin, file):
     """
     Generates data file for AR trends report
-    :return:
+    :return: the AR records count
     """
     with open(file_origin, 'r') as myfile:
         lines = myfile.readlines()
-        newfile = open(file,'w')
+        newfile = open(file, 'w')
         newfile.write(lines[0])
         if len(lines) < num + 1:
             for i in range(1, len(lines)):
                 newfile.write(lines[i])
         else:
-            for i in range( len(lines) - num, len(lines)):
+            for i in range(len(lines) - num, len(lines)):
                 newfile.write(lines[i])
         newfile.close()
+        myfile.close()
+        return len(lines)
 
 def ar_in_out_save_to_excel_daily(rel, domain_map, parammap, files_to_send):
     AR_Detail_Header = ["Issue ID", "AC Date", "AC", "AC Method", "Status",
@@ -552,6 +555,20 @@ def radar_report(parammap, files_to_send):
     ar_in_out_report_by_week(parammap, files_to_send)
     ar_in_out_report_by_day(parammap, files_to_send)
 
+def calc_date_x_unit(ar_records_cnt):
+    """
+    Calculate the x_unit when x aixs is date.
+    :param ar_records_cnt: the count of AR records
+    :return date_x_unit: daily/weekly/monthly
+    """
+    if (ar_records_cnt <= 7):
+        date_x_unit = "daily"
+    elif (ar_records_cnt > 7 and ar_records_cnt <= 70):
+        date_x_unit = "weekly"
+    else:
+        date_x_unit = "monthly"
+
+    return date_x_unit
 if __name__ == '__main__':
     from time import clock
     start=clock()
