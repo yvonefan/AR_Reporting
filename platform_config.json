@@ -8,7 +8,7 @@
      "Priority":["\"P00\"","\"P01\"","\"P02\""],
      "Product Family": ["\"Unified Systems\""],
      "No Product Family" : ["\"USD Test\"", "\"CTD SSIE\""],
-     "Product Release":["\"Merlin\"",
+     "Product Release":["\"Merlin\"","\"Merlin SP1\"","\"Harrier\"","\"Unity 4.x\"",
                         "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                         "\"Bearcat\"","\"Bearcat SP1\"",
@@ -23,7 +23,7 @@
      "Priority":["\"P00\"","\"P01\"","\"P02\""],
      "Product Family": ["\"Unified Systems\""],
      "No Product Family" : ["\"USD Test\"", "\"CTD SSIE\""],
-     "Product Release":["\"Merlin\"",
+     "Product Release":["\"Merlin\"","\"Merlin SP1\"","\"Harrier\"","\"Unity 4.x\"",
                         "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                         "\"Bearcat\"","\"Bearcat SP1\"",
@@ -33,16 +33,21 @@
       "Attribute Label":["\"Major Area\""],
       "Type":["\"Bug\""],
       "Priority":["\"P00\"","\"P01\"","\"P02\""],
-      "Product Release":["\"Merlin\"",
+      "Product Release":["\"Merlin\"","\"Merlin SP1\"","\"Harrier\"","\"Unity 4.x\"",
                          "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
                          "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                          "\"Bearcat\"","\"Bearcat SP1\"",
                          "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\""]
   },
-  "major areas":{
+  "platform domain":{
       "Platform Core":["\"Platform Core\""],
       "SLICs, Protocols and Backend":["\"Back End Protocols\"","\"Block Front End Protocols\"","\"Host access\"",
                                       "\"Hostside\"","\"IoRedirector\"","\"Network Config\"","\"Network\"","\"SLIC Management\""]
+  },
+  "other domains":{
+      "product area names":["\"Software Upgrades - Core\"","\"Software Upgrades - Health Checks\"","\"Software Upgrades - Control Path\"",
+                            "\"System Config - C4LX Distribution & Infrastructure\"","\"System Config - Imaging\"","\"System Resource Services - CF, HA\"",
+                            "\"App Services - PSM\"","\"App Services - Licensing\"","\"App Services - Misc\""]
   },
   "major area managers":{
       "Platform Core":["\"Ramadurai, Balaji\"","\"Hanna, Bill\"","\"Jayanty, Ramanamurthy\"","\"Jones, Greg\"", "\"Zhang, Haohan\"","\"Li, Leon\""],
