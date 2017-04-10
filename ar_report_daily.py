@@ -448,6 +448,14 @@ def refine_twod_array(twod_array):
     return res
 
 def update_last_record(file, timestamp, csvstr, header=''):
+    """
+    write csvstr to file
+    :param file:
+    :param timestamp:
+    :param csvstr:
+    :param header:
+    :return:
+    """
     with open(file, "a+") as myfile:
         if os.path.getsize(file) == 0:
             myfile.write(header)
@@ -522,15 +530,28 @@ def get_ca_map_entry(mmap, v):
         if v in mmap[k]:
             return k
 
-def get_audit_trail_in_list(parammap):
+def get_audit_trail_in_list(parammap, time_interval):
+    """
+    get ar list from the remedy table 'Issue_Audit_join', these ars are created by other domain and assign to platform domain.
+    platform domain =>  other domains
+    :param parammap: parameters given by user
+    :param time_interval: time interval such as daily, weekly.
+    :return: ar list
+    """
     timer = TimeHelper()
-    cur_date = timer.get_day_start(timer.get_mtime())- 24*60*60
-    pre_date = cur_date - 24*60*60
     res = []
+    if time_interval == 'daily':
+        cur_date = timer.get_day_start(timer.get_mtime()) - 24 * 60 * 60
+        pre_date = cur_date - 24 * 60 * 60
+    elif time_interval == 'weekly':
+        cur_date = timer.get_week_start(timer.get_mtime())
+        pre_date = cur_date - 7 * 24 * 60 * 60
+
     in_param = dict(parammap["audit trail param map"])
     in_param['From Time']=[str(pre_date),]
     in_param['To Time']=[str(cur_date),]
-    ca_dict = dict(parammap['major areas'])
+
+    ca_dict = dict(parammap['platform product areas'])
     for k,v in ca_dict.iteritems():
         if 'To Value' not in in_param.keys():
             in_param['To Value'] = list(v)
@@ -539,53 +560,94 @@ def get_audit_trail_in_list(parammap):
     dber = DatabaseHelper()
     print in_param
     for e in dber.get_AR_from_audit_trail(in_param)[0]:
-        res.append(generate_audit_trail_obj(e))
+        #remove the ars whose 'From Value' should not in platform domain
+        if e[1][536870916] not in in_param['To Value']:
+            res.append(generate_audit_trail_obj(e))
+        else:
+            logger.debug("This ar's from value is " + e[1][536870916] + " which should not be in platform product areas.")
+
     return res
 
 def count_audit_in(llist,parammap):
     res = {}
     ayer = ArrayMapHelper()
     for i in llist:
-        k = get_ca_map_entry(parammap['major areas'],i.to_value)
+        k = get_ca_map_entry(parammap['platform domain'],i.to_value)
         #logger.debug("k :" + str(k))
-        ayer.update_oned_map_values(res, k + ' [In]')
+        ayer.update_oned_map_values(res, k + ' In')
     return res
 
-def get_audit_trail_out_list(parammap):
+def get_audit_trail_out_list(parammap, time_interval):
+    """
+    get ar list from the remedy table 'Issue_Audit_join', these ars are created by platform domain and assign to other domains.
+    platform domain => other domains
+    :param parammap: parameters given by user
+    :param time_interval: time interval such as daily, weekly.
+    :return: ar list
+    """
     timer = TimeHelper()
-    cur_date = timer.get_day_start(timer.get_mtime())- 24*60*60
-    pre_date = cur_date - 24*60*60
+    if time_interval == 'daily':
+        cur_date = timer.get_day_start(timer.get_mtime()) - 24 * 60 * 60
+        pre_date = cur_date - 24 * 60 * 60
+    elif time_interval == 'weekly':
+        cur_date = timer.get_week_start(timer.get_mtime())
+        pre_date = cur_date - 7 * 24 * 60 * 60
     res = []
     out_param = dict(parammap["audit trail param map"])
     out_param['From Time']=[str(pre_date),]
     out_param['To Time']=[str(cur_date),]
-    ca_dict = dict(parammap['major areas'])
+    ca_dict = dict(parammap['platform product areas'])
     for k, v in ca_dict.iteritems():
         if 'From Value' not in out_param.keys():
             out_param['From Value'] = list(v)
         else:
             out_param['From Value'] += list(v)
+
     dber = DatabaseHelper()
     print out_param
     for e in dber.get_AR_from_audit_trail(out_param)[0]:
-        res.append(generate_audit_trail_obj(e))
+        # remove the ars whose 'From Value' should not in platform domain
+        if e[1][536870917] not in out_param['From Value']:
+            res.append(generate_audit_trail_obj(e))
+        else:
+            logger.debug(
+                "This ar's to value is " + e[1][536870917] + " which should not be in platform product areas.")
     return res
 
 def count_audit_out(llist,parammap):
     res = {}
     ayer = ArrayMapHelper()
     for i in llist:
-        k = get_ca_map_entry(parammap['major areas'], i.from_value)
-        ayer.update_oned_map_values(res, k + ' [Out]')
+        k = get_ca_map_entry(parammap['platform domain'], i.from_value)
+        ayer.update_oned_map_values(res, k + ' Out')
     return res
 
-def update_total_in_out_record_file(ddict, entries, file):
+def update_total_in_out_record_file(cnt_in, cnt_out, file):
     timer = TimeHelper()
-    cur_date = timer.get_day_start(timer.get_mtime())
-    pre_date = cur_date - 24*60*60
-    timestamp = timer.mtime_to_local_date(pre_date)
+    cur_date = timer.get_week_start(timer.get_mtime())
+    #pre_date = cur_date - 7*24*60*60
+    timestamp = timer.mtime_to_local_date(cur_date)
 
-    logger.debug("[update_total_in_out_record_file]ddict :")
+    logger.debug("[update_total_weekly_in_out_record_file]")
+    #logger.debug(str(ddict))
+
+    csvstr = timestamp
+    header = 'Date'
+    csvstr += ',' + str(cnt_in) + ',' + str(cnt_out) + '\n'
+    header += ',' + 'Total In' + ',' + 'Total Out' + '\n'
+
+    logger.debug('headers: '+str(header))
+    logger.debug('csvstr: '+str(csvstr))
+
+    update_last_record(file, timestamp, csvstr, header)
+
+def update_total_in_out_record_file1(ddict, entries, file):
+    timer = TimeHelper()
+    cur_date = timer.get_week_start(timer.get_mtime())
+    #pre_date = cur_date - 7*24*60*60
+    timestamp = timer.mtime_to_local_date(cur_date)
+
+    logger.debug("[update_total_weekly_in_out_record_file]ddict :")
     logger.debug(str(ddict))
 
     in_total = 0
@@ -692,7 +754,7 @@ def get_ars_assigned_to_manager(ar_obj_list, parammap, files_to_send):
         return
 
     ar_obj_list += get_ar_obj_list(rawars)
-    #dd ARs assigned to ca
+    #add ARs assigned to ca
     if "major area managers" in parammap.keys():
        add_assigned_to_ca(ar_obj_list,parammap["major area managers"])
 
@@ -714,10 +776,11 @@ def ar_total_report(ar_obj_list, bugmap, parammap, files_to_send):
 def ar_total_in_out_trend_report(parammap, files_to_send):
     logger.debug("-"*40 + "[ar_total_in_out_trend_report]" + "-"*40)
 
-    audit_in_list = get_audit_trail_in_list(parammap)
+    audit_in_list = get_audit_trail_in_list(parammap, 'daily')
     in_map = count_audit_in(audit_in_list,parammap)
-    audit_out_list = get_audit_trail_out_list(parammap)
+    audit_out_list = get_audit_trail_out_list(parammap, 'daily')
     out_map = count_audit_out(audit_out_list,parammap)
+    #append out_map to in_map
     in_map.update(out_map)
 
     record_file = dataprefix + '[21]' + parammap["report name"].replace(' ', '') + '_ARs_Total_In_Out.csv'
@@ -733,6 +796,39 @@ def ar_total_in_out_trend_report(parammap, files_to_send):
     title = parammap['report name'].replace(' ', '') + ' Total ARs In/Out Trend'
     lines = ['Total In', 'Total Out']
     save_to_png = pngprefix + '[02]' + parammap["report name"].replace(' ', '') + '_ARs_Total_In_Out_Trend.png'
+    grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
+    files_to_send["image"].append(save_to_png)
+
+def ar_total_weekly_in_out_trend_report(parammap, files_to_send):
+    logger.debug("-"*40 + "[ar_total_weekly_in_out_trend_report]" + "-"*40)
+
+    #only get the weekly ar at everay week start
+    cur_time = timer.get_mtime()
+    cur_week_start = timer.get_week_start(timer.get_mtime())
+    #if (cur_time < cur_week_start + 24 * 60 * 60):
+    if True:
+        audit_in_list = get_audit_trail_in_list(parammap, 'weekly')
+        #in_map = count_audit_in(audit_in_list,parammap)
+        audit_out_list = get_audit_trail_out_list(parammap, 'weekly')
+        #out_map = count_audit_out(audit_out_list,parammap)
+        #append out_map to in_map
+        #in_map.update(out_map)
+
+        record_file = dataprefix + '[21]' + parammap["report name"].replace(' ', '') + '_ARs_Total_Weekly_In_Out.csv'
+        trend_record_file = dataprefix + '[22]' + parammap["report name"].replace(' ', '') + '_ARs_Total_Weekly_In_Out_Trend.csv'
+        #entries = sorted([ca+' In' for ca in parammap["major area managers"]] + [ca+' Out' for ca in parammap["major area managers"]])
+        #logger.debug('entries : '+str(entries))
+
+        update_total_in_out_record_file(len(audit_in_list), len(audit_out_list), record_file)
+        ar_records_cnt = generate_AR_trends_report_data_file(28, record_file, trend_record_file)
+    else:
+        #record_file = dataprefix + '[21]' + parammap["report name"].replace(' ', '') + '_ARs_Total_Weekly_In_Out.csv'
+        trend_record_file = dataprefix + '[22]' + parammap["report name"].replace(' ', '') + '_ARs_Total_Weekly_In_Out_Trend.csv'
+    #draw total ar in/out trend chart
+    date_x_unit = 'weekly'
+    title = parammap['report name'].replace(' ', '') + ' Total ARs Weekly In/Out Trend'
+    lines = ['Total In', 'Total Out']
+    save_to_png = pngprefix + '[02]' + parammap["report name"].replace(' ', '') + '_ARs_Total_Weekly_In_Out_Trend.png'
     grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
     files_to_send["image"].append(save_to_png)
 
@@ -980,6 +1076,7 @@ def main():
     ar_blocking_report(ar_obj_list, parammap, files_to_send)
     ar_total_report(ar_obj_list, bugmap, parammap, files_to_send)
     #ar_total_in_out_trend_report(parammap, files_to_send)
+    ar_total_weekly_in_out_trend_report(parammap, files_to_send)
     ar_total_age_report(ar_obj_list, parammap, files_to_send)
     ar_total_trend_report(bugmap, parammap, files_to_send)
     ar_direct_manager_report(ar_obj_list, parammap, files_to_send)

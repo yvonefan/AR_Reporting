@@ -157,6 +157,11 @@ class DatabaseHelper:
         return (entries, num)
 
     def get_fixed_time_from_audit_trail_with_rules(self, entry_id):
+        """
+        use ar's entry_id to search ar info in the table 'EMC:Issue_Audit_join'.
+        :param entry_id: ar's id
+        :return: (entries, num) the result is only one ar's info.
+        """
         self.logger.debug("getting AR field from audi trial table by AR id...") if self.logger else ""
         ars = erars.erARS()
         self._db_login(ars)
@@ -178,6 +183,7 @@ class DatabaseHelper:
         #    Attribute Label:         536870925
         #    To Value:                536870917
         #    Audit Create Date:       536870929
+        #use fields to select which info should be shown in the search results, all the fileds are defined in the related table in library.
         fields = (536870921, 536870926, 536870925, 536870917, 536870929)
         try:
             (entries, num) = ars.GetListEntryWithFields(schema, query, fields)
