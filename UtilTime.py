@@ -26,6 +26,15 @@ class TimeHelper:
             return ""
         return time.strftime('%m/%d/%Y %H:%M', time.localtime(mtime))
 
+    def mtime_to_local_file_time(self,mtime=None):
+        """
+        Coverts machine time to local time
+        :param mtime: machine time
+        :return: local time in '%m/%d/%Y %H:%M' format
+        """
+        if mtime is None:
+            return ""
+        return time.strftime('%Y%m%d_%H%M', time.localtime(mtime))
 
     def mtime_to_local_date(self,mtime=None):
         """
@@ -105,6 +114,18 @@ class TimeHelper:
         weekday = self.get_weekday(mtime)
         daystart = self.get_day_start(mtime)
         return daystart - weekday*24*60*60
+
+    def get_first_week_start(self):
+        """
+        Gets the start of the week in the current year. Monday is 0.
+        :return: timestamp: the first Monday of this year
+        """
+        cur_datetime = datetime.datetime.now()
+        start_day = datetime.datetime(cur_datetime.year, 1, 1)
+        start_day += datetime.timedelta( 7 - start_day.weekday())
+        #change datetime to timestamp, unit is second.
+        start_day = time.mktime(start_day.timetuple())
+        return start_day
 
     def date_str_to_date_obj(self, dstr):
         dat = time.strptime(dstr,'%m/%d/%Y')
