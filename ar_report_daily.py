@@ -1621,8 +1621,9 @@ def ar_total_weekly_in_out_trend_report(parammap, files_to_send):
     record_file = data_csvprefix + '[11]' + parammap["report name"].replace(' ', '') + '_ARs_Total_Weekly_In_Out_Trend.csv'
     get_ar_total_weekly_in_out(parammap, record_file, hist_needed)
 
-    draw_weekly_total_inout_trend_chart(parammap, record_file, files_to_send)
-    draw_weekly_release_inout_trend_chart(parammap, record_file, files_to_send)
+    if os.path.exists(record_file):
+        draw_weekly_total_inout_trend_chart(parammap, record_file, files_to_send)
+        draw_weekly_release_inout_trend_chart(parammap, record_file, files_to_send)
 
 def ar_total_age_report(ar_obj_list, parammap, files_to_send):
     logger.debug("-"*40 + "[ar_total_age_report]" + "-"*40)
