@@ -1313,7 +1313,7 @@ def get_ar_total_weekly_in_out(parammap, record_file, hist_needed = False):
     cur_time = timer.get_mtime()
     # get historical ARs before this week start(Monday)
     if hist_needed:
-        start = "2017-01-02 9:00:00"
+        start = "2017-05-02 9:00:00"
         th_ta = time.strptime(start, "%Y-%m-%d %H:%M:%S")
         start_sec = int(time.mktime(th_ta))
         #end = "2017-05-07 11:22:00"
@@ -1621,8 +1621,9 @@ def ar_total_weekly_in_out_trend_report(parammap, files_to_send):
     record_file = data_csvprefix + '[11]' + parammap["report name"].replace(' ', '') + '_ARs_Total_Weekly_In_Out_Trend.csv'
     get_ar_total_weekly_in_out(parammap, record_file, hist_needed)
 
-    draw_weekly_total_inout_trend_chart(parammap, record_file, files_to_send)
-    draw_weekly_release_inout_trend_chart(parammap, record_file, files_to_send)
+    if os.path.exists(record_file):
+        draw_weekly_total_inout_trend_chart(parammap, record_file, files_to_send)
+        draw_weekly_release_inout_trend_chart(parammap, record_file, files_to_send)
 
 def ar_total_age_report(ar_obj_list, parammap, files_to_send):
     logger.debug("-"*40 + "[ar_total_age_report]" + "-"*40)
