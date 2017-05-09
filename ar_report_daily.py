@@ -1313,7 +1313,7 @@ def get_ar_total_weekly_in_out(parammap, record_file, hist_needed = False):
     cur_time = timer.get_mtime()
     # get historical ARs before this week start(Monday)
     if hist_needed:
-        start = "2017-05-02 9:00:00"
+        start = "2017-01-02 9:00:00"
         th_ta = time.strptime(start, "%Y-%m-%d %H:%M:%S")
         start_sec = int(time.mktime(th_ta))
         #end = "2017-05-07 11:22:00"
