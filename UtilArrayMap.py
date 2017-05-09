@@ -181,7 +181,7 @@ class ArrayMapHelper:
         :param row_end: index of the end row
         :param col_start: index of the start column
         :param col_end: index of the end column
-        :param to_char: char to replace '0' / 0
+        :param to_char: char to replace '0' / 0  to ''
         :return:
         """
         for i in range(row_start,row_end+1):

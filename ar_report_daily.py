@@ -24,6 +24,7 @@ from ARAuditTrail import *
 
 from RadarCrawler import *
 import ar_radar_report
+import xlwt
 
 __author__ = "Ming.Yao@emc.com"
 
@@ -33,6 +34,9 @@ sys.setdefaultencoding('utf8')
 __filename__ = os.path.basename(__file__)
 fpath = os.path.dirname(os.path.realpath(__file__))
 dataprefix = fpath + '\\data\\'
+data_csvprefix = dataprefix + '\\csv\\'
+data_daily_openar_prefix = dataprefix + '\\daily_open\\'
+data_weekly_inoutar_prefix = dataprefix + '\\weekly_inout\\'
 pngprefix = fpath + '\\png\\'
 logprefix = fpath + '\\log\\'
 
@@ -448,6 +452,14 @@ def refine_twod_array(twod_array):
     return res
 
 def update_last_record(file, timestamp, csvstr, header=''):
+    """
+    write csvstr to file
+    :param file:
+    :param timestamp:
+    :param csvstr:
+    :param header:
+    :return:
+    """
     with open(file, "a+") as myfile:
         if os.path.getsize(file) == 0:
             myfile.write(header)
@@ -522,95 +534,877 @@ def get_ca_map_entry(mmap, v):
         if v in mmap[k]:
             return k
 
-def get_audit_trail_in_list(parammap):
-    timer = TimeHelper()
-    cur_date = timer.get_day_start(timer.get_mtime())- 24*60*60
-    pre_date = cur_date - 24*60*60
-    res = []
-    in_param = dict(parammap["audit trail param map"])
-    in_param['From Time']=[str(pre_date),]
-    in_param['To Time']=[str(cur_date),]
-    ca_dict = dict(parammap['major areas'])
-    for k,v in ca_dict.iteritems():
-        if 'To Value' not in in_param.keys():
-            in_param['To Value'] = list(v)
+def process_ar_fixed_dismissed_in_time_range(ar_in_out_obj_dict, parammap, auditEntries):
+    ar = ar_in_out_obj_dict
+    for entry in auditEntries:
+        for key, value in entry[1].iteritems():
+            if key == 536870921:
+                entry_id = value
+            if key == 536870916:
+                from_value = value
+            elif key == 536870917:
+                to_value = value
+            elif key == 536870929:
+                touch_date =value
+            elif key == 536870938:
+                touch_man = value
+            elif key == 600000701:
+                assignee_fname = value
+            elif key == 8:
+                product_area = value
+            elif key == 7:
+                status = value
+            elif key == 536870941:
+                status_details = value
+            elif key == 536871535:
+                not_a_child = value
+            elif key == 536871412:
+                major_area = value
+            elif key == 536871084:
+                ar_type = value
+            elif key == 3:
+                create_time = value
+            elif key == 536870940:
+                product_release = value
+
+        if entry_id not in ar.keys():
+            #print ("DEBUG %s" % entry_id)
+            ar[entry_id]=dict()
+            ar[entry_id]["entry_id"]=entry_id
+            ar[entry_id]["from_value"]=from_value
+            ar[entry_id]["to_value"]=to_value
+            ar[entry_id]["touch_date"]=touch_date
+            ar[entry_id]["touch_man"]=touch_man
+            ar[entry_id]["assignee_fname"]=assignee_fname
+            ar[entry_id]["product_area"]=product_area
+            ar[entry_id]["status"]=status
+            ar[entry_id]["status_details"]=status_details
+            ar[entry_id]["not_a_child"]=not_a_child
+            ar[entry_id]["major_area"]=major_area
+            ar[entry_id]["ar_type"]=ar_type
+            ar[entry_id]['create_time']=create_time
+            ar[entry_id]['product_release'] = product_release
+            if to_value=="Fixed":
+                ar[entry_id]['atf_time']=touch_date
+                ar[entry_id]['atf_man']=touch_man
+            elif to_value=="Dismissed":
+                ar[entry_id]['atm_time']=touch_date
+                ar[entry_id]['atm_man']=touch_man
+            else:
+                print "DEBUG: error happened! 4"
         else:
-            in_param['To Value'] += list(v)
+            if to_value=="Fixed":
+                ar[entry_id]['atf_time']=touch_date
+                ar[entry_id]['atf_man']=touch_man
+            elif to_value=="Dismissed":
+                ar[entry_id]['atm_time']=touch_date
+                ar[entry_id]['atm_man']=touch_man
+            else:
+                print "DEBUG: error happened! 5"
+
+def process_ar_reopen_in_time_range(ar_in_out_obj_dict, parammap, auditEntries):
+    ar = ar_in_out_obj_dict
+    for entry in auditEntries:
+        for key, value in entry[1].iteritems():
+            if key == 536870921:
+                entry_id = value
+            if key == 536870916:
+                from_value = value
+            elif key == 536870917:
+                to_value = value
+            elif key == 536870929:
+                touch_date =value
+            elif key == 536870938:
+                touch_man = value
+            elif key == 600000701:
+                assignee_fname = value
+            elif key == 8:
+                product_area = value
+            elif key == 7:
+                status = value
+            elif key == 536870941:
+                status_details = value
+            elif key == 536871535:
+                not_a_child = value
+            elif key == 536871412:
+                major_area = value
+            elif key == 536871084:
+                ar_type = value
+            elif key == 3:
+                create_time = value
+            elif key == 536870940:
+                product_release = value
+
+        if entry_id not in ar.keys():
+            #print ("DEBUG %s" % entry_id)
+            ar[entry_id]=dict()
+            ar[entry_id]["entry_id"]=entry_id
+            ar[entry_id]["from_value"]=from_value
+            ar[entry_id]["to_value"]=to_value
+            ar[entry_id]["touch_date"]=touch_date
+            ar[entry_id]["touch_man"]=touch_man
+            ar[entry_id]["assignee_fname"]=assignee_fname
+            ar[entry_id]["product_area"]=product_area
+            ar[entry_id]["status"]=status
+            ar[entry_id]["status_details"]=status_details
+            ar[entry_id]["not_a_child"]=not_a_child
+            ar[entry_id]["major_area"]=major_area
+            ar[entry_id]["ar_type"]=ar_type
+            ar[entry_id]['create_time']=create_time
+            ar[entry_id]['product_release'] = product_release
+            if to_value=="Open":
+                ar[entry_id]['ati_time']=touch_date
+                ar[entry_id]['atm_man']=touch_man
+            else:
+                print "DEBUG: error happened! 4"
+        else:
+            if to_value=="Open":
+                ar[entry_id]['ati_time']=touch_date
+                ar[entry_id]['atf_man']=touch_man
+            else:
+                print "DEBUG: error happened! 5"
+
+def process_ar_from_assigned_to_manager_join(ar_in_out_obj_dict, parammap, auditEntries):
+    ar = ar_in_out_obj_dict
+    for entry in auditEntries:
+        for key, value in entry[1].iteritems():
+            if key == 536870921:
+                entry_id = value
+            elif key == 600000701:
+                assignee_fname = value
+            elif key == 8:
+                product_area = value
+            elif key == 7:
+                status = value
+            elif key == 536870941:
+                status_details = value
+            elif key == 536871535:
+                not_a_child = value
+            elif key == 536871412:
+                major_area = value
+            elif key == 536871084:
+                ar_type = value
+            elif key == 3:
+                create_time = value
+            elif key == 536870940:
+                product_release = value
+
+        if entry_id not in ar.keys():
+            #print ("DEBUG %s "% entry_id)
+            ar[entry_id]=dict()
+            ar[entry_id]["entry_id"]=entry_id
+            ar[entry_id]["assignee_fname"]=assignee_fname
+            ar[entry_id]["product_area"]=product_area
+            ar[entry_id]["status"]=status
+            ar[entry_id]["status_details"]=status_details
+            ar[entry_id]["not_a_child"]=not_a_child
+            ar[entry_id]["major_area"]=major_area
+            ar[entry_id]["ar_type"]=ar_type
+            ar[entry_id]['create_time']=create_time
+            ar[entry_id]['product_release'] = product_release
+
+def process_ar_from_audit_trail(ar_in_out_obj_dict, parammap, auditEntries):
+    ar = ar_in_out_obj_dict
+    for entry in auditEntries:
+        #search ar in manager table with entry_id to get senior manager info to check if this ar belongs to platform.
+        entry_id=''
+        attribute_field=''
+        from_value=''
+        to_value=''
+        touch_date=''
+        touch_man=''
+        assignee_fname=''
+        product_area=''
+        status=''
+        status_details=''
+        not_a_child=''
+        major_area=''
+        ar_type=''
+        create_time=''
+        product_release = ''
+
+        for key, value in entry[1].iteritems():
+            if key == 536870921:
+                entry_id = value
+            elif key == 536870925:
+                attribute_field = value
+            elif key == 536870916:
+                from_value = value
+            elif key == 536870917:
+                to_value = value
+            elif key == 536870929:
+                touch_date =value
+            elif key == 536870938:
+                touch_man = value
+            elif key == 600000701:
+                assignee_fname = value
+            elif key == 8:
+                product_area = value
+            elif key == 7:
+                status = value
+            elif key == 536870941:
+                status_details = value
+            elif key == 536871535:
+                not_a_child = value
+            elif key == 536871412:
+                major_area = value
+            elif key == 536871084:
+                ar_type = value
+            elif key == 3:
+                create_time = value
+            elif key == 536870940:
+                product_release = value
+
+        #print "DEBUG: Parsing AR[" + entry_id + "]"
+        target_area = [str(product_area.replace('"', '')) for product_area in parammap['platform product areas']['product area names']]
+
+        if entry_id not in ar.keys():
+            ar[entry_id]=dict()
+            ar[entry_id]["entry_id"]=entry_id
+            ar[entry_id]["from_value"]=from_value
+            ar[entry_id]["to_value"]=to_value
+            ar[entry_id]["touch_date"]=touch_date
+            ar[entry_id]["touch_man"]=touch_man
+            ar[entry_id]["assignee_fname"]=assignee_fname
+            ar[entry_id]["product_area"]=product_area
+            ar[entry_id]["status"]=status
+            ar[entry_id]["status_details"]=status_details
+            ar[entry_id]["not_a_child"]=not_a_child
+            ar[entry_id]["major_area"]=major_area
+            ar[entry_id]["ar_type"]=ar_type
+            ar[entry_id]['create_time']=create_time
+            ar[entry_id]['product_release'] = product_release
+            if attribute_field == "Product Area":
+                if from_value in target_area:   # This is an outgoing AR.
+                    ar[entry_id]['ato_time']=touch_date
+                    ar[entry_id]['ato_man']=touch_man
+                elif to_value in target_area:   # This is an incoming AR.
+                    ar[entry_id]['ati_time']=touch_date
+                    ar[entry_id]['ati_man']=touch_man
+                else:
+                    print "DEBUG: error happened! 0"
+            elif attribute_field == "Classification":   # This is a duplicated AR. But attribute_field still equals to "Product Area"
+                ar[entry_id]['atd_time']=touch_date
+                ar[entry_id]['atd_man']=touch_man
+            else:
+                print "DEBUG: error happened! 1 [" + attribute_field + "][" + from_value + "][" + to_value + "]"
+        else:
+            if attribute_field == "Product Area":
+                if from_value in target_area:   # This is an outgoing AR.
+                    if "ato_time" not in ar[entry_id].keys():
+                        ar[entry_id]['ato_time']=touch_date   #touch_date seems like create-date
+                        ar[entry_id]['ato_man']=touch_man
+                        ar[entry_id]["from_value"]=from_value
+                        ar[entry_id]["to_value"]=to_value
+                        ar[entry_id]["touch_date"]=touch_date
+                        ar[entry_id]["touch_man"]=touch_man
+                    else:
+                        #
+                        if ar[entry_id]['ato_time']<touch_date:
+                            ar[entry_id]['ato_time']=touch_date
+                            ar[entry_id]['ato_man']=touch_man
+                            ar[entry_id]["from_value"]=from_value
+                            ar[entry_id]["to_value"]=to_value
+                            ar[entry_id]["touch_date"]=touch_date
+                            ar[entry_id]["touch_man"]=touch_man
+                elif to_value in target_area:   # This is an incoming AR.
+                    if "ati_time" not in ar[entry_id].keys():
+                        ar[entry_id]['ati_time']=touch_date
+                        ar[entry_id]['ati_man']=touch_man
+                        ar[entry_id]["from_value"]=from_value
+                        ar[entry_id]["to_value"]=to_value
+                        ar[entry_id]["touch_date"]=touch_date
+                        ar[entry_id]["touch_man"]=touch_man
+                    else:
+                        #
+                        if ar[entry_id]['ati_time']<touch_date:
+                            ar[entry_id]['ati_time']=touch_date
+                            ar[entry_id]['ati_man']=touch_man
+                            ar[entry_id]["from_value"]=from_value
+                            ar[entry_id]["to_value"]=to_value
+                            ar[entry_id]["touch_date"]=touch_date
+                            ar[entry_id]["touch_man"]=touch_man
+                else:
+                    print "DEBUG: error happened! 2"
+            else:
+                print "DEBUG: error happened! 3"
+
+def get_ar_created_in_time_range_per_product_area(ar_in_out_obj_dict, parammap, start_date, end_date):
+    #schema = 'EMC:Issue Assigned-to Manager Join'
+    get_param = dict()
+    get_param['Type'] = parammap['assinged to manager param map']['Type']
+    get_param['Priority'] = parammap['assinged to manager param map']['Priority']
+    get_param['Product Release'] = parammap['assinged to manager param map']['Product Release']
+    get_param['Product Family'] = parammap['assinged to manager param map']['Product Family']
+    get_param['Status'] = parammap['assinged to manager param map']['Status']
+    # get_param['Create-date Low'] = [str(start_date), ]
+    # get_param['Create-date High'] = [str(end_date), ]
+
+    get_param['Senior Manager'] = parammap['assinged to manager param map']['Senior Manager']
+
     dber = DatabaseHelper()
-    print in_param
-    for e in dber.get_AR_from_audit_trail(in_param)[0]:
-        res.append(generate_audit_trail_obj(e))
-    return res
+    entries, num = dber.get_AR_from_assigned_to_manager(get_param)
+    if entries:
+        process_ar_from_assigned_to_manager_join(ar_in_out_obj_dict, parammap, entries)
+
+def get_ar_created_pa_in_time_range_per_product_area(ar_in_out_obj_dict, parammap, start_date, end_date):
+    #schema = 'EMC:Issue Assigned-to Manager Join'
+    get_param = dict()
+    get_param['Type'] = parammap['assinged to manager param map']['Type']
+    get_param['Priority'] = parammap['assinged to manager param map']['Priority']
+    get_param['Product Release'] = parammap['assinged to manager param map']['Product Release']
+    get_param['Product Family'] = parammap['assinged to manager param map']['Product Family']
+    get_param['Status'] = parammap['assinged to manager param map']['Status']
+    # get_param['Create-date Low'] = [str(start_date), ]
+    # get_param['Create-date High'] = [str(end_date), ]
+    ca_dict = dict(parammap['platform product areas'])
+    for k, v in ca_dict.iteritems():
+        if 'Product Area' not in get_param.keys():
+            get_param['Product Area'] = list(v)
+        else:
+            get_param['Product Area'] += list(v)
+
+    dber = DatabaseHelper()
+    entries, num = dber.get_AR_from_assigned_to_manager(get_param)
+    if entries:
+        process_ar_from_assigned_to_manager_join(ar_in_out_obj_dict, parammap, entries)
+
+def get_ar_fixed_dismissed_in_time_range(ar_in_out_obj_dict, parammap, start_date, end_date):
+    schema = 'EMC:Issue_Audit_join'
+    get_param = dict()
+    get_param['Type'] = parammap['audit trail param map']['Type']
+    get_param['Priority'] = parammap['audit trail param map']['Priority']
+    get_param['Product Release'] = parammap['audit trail param map']['Product Release']
+    get_param['Product Family'] = parammap['audit trail param map']['Product Family']
+    get_param['To Value'] = ["\"Fixed\"","\"Dismissed\""]
+    get_param['From Time'] = [str(start_date), ]
+    get_param['To Time'] = [str(end_date), ]
+    get_param['Attribute Label'] = ["\"Status\"",]
+    ca_dict = dict(parammap['platform product areas'])
+    for k, v in ca_dict.iteritems():
+        if 'Product Area' not in get_param.keys():
+            get_param['Product Area'] = list(v)
+        else:
+            get_param['Product Area'] += list(v)
+
+    entries, num = dber.get_AR_from_audit_trail(get_param)
+    process_ar_fixed_dismissed_in_time_range(ar_in_out_obj_dict, parammap, entries)
+
+def get_ar_reopen_in_time_range(ar_in_out_obj_dict, parammap, start_date, end_date):
+    schema = 'EMC:Issue_Audit_join'
+    get_param = dict()
+    get_param['Type'] = parammap['audit trail param map']['Type']
+    get_param['Priority'] = parammap['audit trail param map']['Priority']
+    get_param['Product Release'] = parammap['audit trail param map']['Product Release']
+    get_param['Product Family'] = parammap['audit trail param map']['Product Family']
+    get_param['From Value'] = ["\"Fixed\"","\"Dismissed\""]
+    get_param['To Value'] = ["\"Open\""]
+    get_param['From Time'] = [str(start_date), ]
+    get_param['To Time'] = [str(end_date), ]
+    get_param['Attribute Label'] = ["\"Status\"",]
+    ca_dict = dict(parammap['platform product areas'])
+    for k, v in ca_dict.iteritems():
+        if 'Product Area' not in get_param.keys():
+            get_param['Product Area'] = list(v)
+        else:
+            get_param['Product Area'] += list(v)
+
+    entries, num = dber.get_AR_from_audit_trail(get_param)
+    process_ar_reopen_in_time_range(ar_in_out_obj_dict, parammap, entries)
+
+def get_in_out_ar_from_audit_trail_with_rules(ar_in_out_obj_dict, parammap, start_date, end_date):
+    """
+    Get all the ars from audit trail table, the product release are defined in platform_config.json.
+    :param parammap:
+    :param start_date:
+    :param end_date:
+    :param ar_direction: True - in, assigned to platform; False - out, assigned to other product areas
+    :return:res - the ars from audit trail table
+    """
+    get_param = dict(parammap["audit trail param map"])
+    get_param['From Time'] = [str(start_date), ]
+    get_param['To Time'] = [str(end_date), ]
+
+    ca_dict = dict(parammap['platform product areas'])
+    for k, v in ca_dict.iteritems():
+        if 'From Value' not in get_param.keys():
+            get_param['From Value'] = list(v)
+        else:
+            get_param['From Value'] += list(v)
+
+    dber = DatabaseHelper()
+    entries1, num1 = dber.get_AR_from_audit_trail(get_param)
+    get_param['To Value'] = get_param['From Value']
+    get_param.pop('From Value')
+    entries2, num2 = dber.get_AR_from_audit_trail(get_param)
+    ar_list = entries1 + entries2
+    process_ar_from_audit_trail(ar_in_out_obj_dict, parammap, ar_list)
+
+def filter_ar_with_release(ar_in_out_obj_dict, parammap, start_date,end_date, file):
+    """
+
+    :param parammap:
+    :param rls_cnt_dict:
+    :param ar_list:
+    :return:
+    """
+
+    ar_weekly_in_out_record = dict()
+    ar_in_out_in_time_range = dict()
+    ar_weekly_in_out_record['Total_In'] = 0
+    ar_weekly_in_out_record['Total_Out'] = 0
+    concern_release = []
+    for product_release in parammap["audit trail param map"]["Specific Product Release"]:
+        product_release = str(product_release.replace('"', ''))
+        concern_release.append(product_release)
+        ar_weekly_in_out_record[product_release + '_In'] = 0
+        ar_weekly_in_out_record[product_release + '_Out'] = 0
+
+    for k, v in ar_in_out_obj_dict.iteritems():
+        #For the child ar, in_time should not be dup_time, it should be create_time
+        # if 'create_time' in v.keys() and 'in_time' in v.keys():
+        #     if v["not_a_child"] != 0:
+        #         v['in_time'] = v['create_time']
+        #
+        #For the child ar, if in_time > out_time, i.e., after duplicated, the in_time is the updated of its parent ar not this child ar.
+        if 'in_time' in v.keys() and 'out_time' in v.keys():
+            if v["not_a_child"] != 0 and v['in_time'] >= v['out_time']:
+                v['in_time'] = 0
+                v['out_time'] = 0
+
+        if 'in_time' in v.keys():
+            # remove the ar not in search time range, since get_child_ar_from_audit_trail get all child ars in audit table included ars not in search time range.
+            if v['in_time'] >= start_date and v['in_time'] <= end_date:
+                ar_in_out_in_time_range[k] = v
+                ar_weekly_in_out_record['Total_In'] += 1
+                if 'product_release' in v.keys() and v['product_release'] in concern_release:
+                    ar_weekly_in_out_record[v['product_release'] + '_In'] += 1
+
+        if 'out_time' in v.keys():
+            if v['out_time'] >= start_date and v['out_time'] <= end_date:
+                ar_in_out_in_time_range[k] = v
+                ar_weekly_in_out_record['Total_Out'] += 1
+                if 'product_release' in v.keys() and v['product_release'] in concern_release:
+                    ar_weekly_in_out_record[v['product_release'] + '_Out'] += 1
+
+    from copy import deepcopy
+    ar_in_out_obj_dict.clear()
+    ar_in_out_obj_dict.update(ar_in_out_in_time_range)
+    header = 'Date'
+    csvstr = timer.mtime_to_local_date(end_date)
+    for k, v in ar_weekly_in_out_record.iteritems():
+        header += ',' + k
+        csvstr += ',' + str(v)
+    header += '\n'
+    csvstr += '\n'
+    timestamp = timer.mtime_to_local_date(timer.get_mtime())
+    update_last_record(file, timestamp, csvstr, header)
+    #return ar_in_out_in_time_range
+
+def update_dup_time_for_child_ar(ar_in_out_obj_dict, entry_id, start_date, end_date):
+    ar = ar_in_out_obj_dict
+    dber = DatabaseHelper()
+    auditEntries, num = dber.get_child_ar_from_audit_trail(entry_id,start_date,end_date)
+    for entry in auditEntries:
+        for key, value in entry[1].iteritems():
+            if key == 536870929:
+                #touch_date is the date of this ar changed to child from unique or parent
+                touch_date =value
+            elif key == 536870938:
+                touch_man = value
+        if "atd_time" not in ar[entry_id].keys():
+            ar[entry_id]['atd_time']=touch_date
+            ar[entry_id]['atd_man']=touch_man
+        else:
+            #when deplicated for several times, atd_time use the latest duplicate time. Since if the parent ar is duplicated again, the last child will also be updated the touch_date.
+            if ar[entry_id]['atd_time']<touch_date:
+                ar[entry_id]['atd_time']=touch_date
+                ar[entry_id]['atd_man']=touch_man
+
+def process_ar_total_weekly_in_out(ar_in_out_obj_dict, parammap, start_date, end_date):
+    ar = ar_in_out_obj_dict
+    print "DEBUG: Calculate In/Out Time and fill up the rest fields"
+    length = str(len(ar))
+    print ("DEBUG: AR Number before filter[%s]" % length)
+    i = 0
+    for x in ar.keys():
+        ar[x]['error'] = ""
+        ar[x]["hide"] = 0
+
+        pa = ar[x]['product_area']
+
+        product_area = [str(product_area.replace('"', '')) for product_area in
+                       parammap['platform product areas']['product area names']]
+        # AR X is in target area now.
+        if pa in product_area:
+            if ar[x]["not_a_child"] != 0:  # AR X is a child AR now.
+                res = update_dup_time_for_child_ar(ar_in_out_obj_dict, x, start_date, end_date)
+                # Get the In-Time for AR X.
+                if "ati_time" in ar[x].keys():  # AR X has been triaged or duped into target_area from other area.
+                    ar[x]['in_time'] = ar[x]['ati_time']
+                else:  # AR X has been duped into target_area from target_area.
+                    if "atd_time" in ar[x].keys() and ar[x]['atd_time'] >= start_date and ar[x]['atd_time'] <= end_date:  # AR X has been duplicated into target area within the time_range.
+                        ar[x]['in_time'] = ar[x]['atd_time']  #why in_time = atd_time? e.g., ar 903300 it has create_time, so in_time should be create_time.
+                    else:  # AR X has been created before the given time beginning.
+                        ar[x]['error'] = ar[x][
+                                             'error'] + "No In-Time: Child X in target_area was not triaged/duped in time_range, "
+                        ar[x]["hide"] = ar[x]["hide"] + 1
+                # Get the Out-Time for AR X.
+                if "atd_time" in ar[x].keys() and ar[x]['atd_time'] >= start_date and ar[x]['atd_time'] <= end_date:  # AR X has been duped into target_area within the time_range
+                    ar[x]['out_time'] = ar[x]['atd_time']
+                    ar[x]['out_man'] = ar[x]['atd_man']
+                else:  # AR X has been duped into target_area before the time_range.
+                    ar[x]['error'] = ar[x][
+                                         'error'] + "No Out-Time: Child X in target_area was not duped in time_range, "
+                    ar[x]["hide"] = ar[x]["hide"] + 1
+            else:  # AR X is unique or parent AR, we call it as "Adult" AR.
+                # Get the In-Time for AR X.
+                if "ati_time" in ar[x].keys():  # AR X has been triaged into target_area from other area.
+                    ar[x]['in_time'] = ar[x]['ati_time']
+                else:  # AR X in target_area was created within the time_range.
+                    if ar[x]['create_time'] >= start_date:  # AR X has been created within the time range
+                        ar[x]['in_time'] = ar[x]['create_time']
+                    else:  # AR X in target_area was created before the time_range.
+                        ar[x]['error'] = ar[x][
+                                             'error'] + "No In-Time: Adult X in target_area was created before time_range, "
+                        ar[x]["hide"] = ar[x]["hide"] + 1
+                # Get the Out-Time for AR X.
+                if "atf_time" in ar[x].keys() and "atm_time" in ar[x].keys():
+                    if ar[x]['atm_time'] > ar[x]['atf_time']:
+                        ar[x]['out_time'] = ar[x]['atm_time']
+                        ar[x]['out_man'] = ar[x]['atm_man']
+                    else:
+                        ar[x]['out_time'] = ar[x]['atf_time']
+                        ar[x]['out_man'] = ar[x]['atf_man']
+                elif "atf_time" in ar[x].keys() and "atm_time" not in ar[x].keys():
+                    ar[x]['out_time'] = ar[x]['atf_time']
+                    ar[x]['out_man'] = ar[x]['atf_man']
+                elif "atf_time" not in ar[x].keys() and "atm_time" in ar[x].keys():
+                    ar[x]['out_time'] = ar[x]['atm_time']
+                    ar[x]['out_man'] = ar[x]['atm_man']
+                else:
+                    ar[x]['error'] = ar[x][
+                                         'error'] + "No Out-Time: Adult X in target_area was NOT fixed/dismissed in time_range, "
+                    ar[x]["hide"] = ar[x]["hide"] + 1
+        else:  # AR X is NOT in target_area now.
+            if ar[x]["not_a_child"] != 0:  # =None, AR X is a child AR now.
+                res = update_dup_time_for_child_ar(ar_in_out_obj_dict, x, start_date, end_date)
+                # Get the In-Time for AR X.
+                if "ati_time" in ar[x].keys():  # AR X had been triaged or duped into target_area from other area.
+                    ar[x]['in_time'] = ar[x]['ati_time']
+                else:
+                    if ar[x]['create_time'] >= start_date:  # AR X in target_area had been created within the time range
+                        ar[x]['in_time'] = ar[x]['create_time']
+                    else:  # AR X has been created before the given time beginning
+                        ar[x]['error'] = ar[x][
+                                             'error'] + "No In-Time: Child X not in target_area was created before time_range, "
+                        ar[x]["hide"] = ar[x]["hide"] + 1
+                # Get the Out-Time for AR X.
+                if "ato_time" in ar[x].keys() and "atd_time" in ar[x].keys():
+                    if ar[x]['ato_time'] < ar[x]['atd_time']:
+                        ar[x]['out_time'] = ar[x]['ato_time']
+                        ar[x]['out_man'] = ar[x]['ato_man']
+                    else:
+                        ar[x]['out_time'] = ar[x]['atd_time']
+                        ar[x]['out_man'] = ar[x]['atd_man']
+                elif "ato_time" not in ar[x].keys() and "atd_time" in ar[x].keys():
+                    ar[x]['out_time'] = ar[x]['atd_time']
+                    ar[x]['out_man'] = ar[x]['atd_man']
+                elif "ato_time" in ar[x].keys() and "atd_time" not in ar[x].keys():
+                    ar[x]['out_time'] = ar[x]['ato_time']
+                    ar[x]['out_man'] = ar[x]['ato_man']
+                else:  # "ato_time" not in ar[x].keys() and "atd_time" not in ar[x].keys():
+                    ar[x]['error'] = ar[x][
+                                         'error'] + "No Out-Time: Child X not in target_area was NOT duped/triaged-out in time_range, "
+                    ar[x]["hide"] = ar[x]["hide"] + 1
+            else:  # Unique or Parent AR
+                # Get the In-Time for AR X.
+                if "ati_time" in ar[x].keys():
+                    ar[x]['in_time'] = ar[x]['ati_time']
+                else:
+                    if ar[x]['create_time'] >= start_date:  # AR X has been created within the time range
+                        ar[x]['in_time'] = ar[x]['create_time']
+                    else:  # X has been created before the given time beginning
+                        ar[x]['error'] = ar[x][
+                                             'error'] + "No In-Time: Adult X not in target_area was created before time_range, "
+                        ar[x]['hide'] = ar[x]['hide'] + 1
+                # Get the Out-Time
+                if "ato_time" in ar[x].keys():
+                    ar[x]['out_time'] = ar[x]['ato_time']
+                    ar[x]['out_man'] = ar[x]['ato_man']
+                else:
+                    ar[x]['error'] = ar[x][
+                                         'error'] + "No Out-Time: Adult X not in target_area was NOT triaged-out in time_range, "
+                    ar[x]['hide'] = ar[x]['hide'] + 1
+
+def save_weekly_ar(ar_in_out_obj_dict, date):
+    ar = ar_in_out_obj_dict
+    timer = TimeHelper()
+    file_time = timer.mtime_to_local_file_time(date)
+    outfile = data_weekly_inoutar_prefix + "ar_weekly_" + file_time + ".xls"
+    wb = xlwt.Workbook()
+    sht1 = wb.add_sheet("All_In_Out")
+
+    rn = 0
+
+    row1 = sht1.row(rn)
+
+    row1.write(0, 'Entry ID')
+    row1.write(1, 'Type')
+    row1.write(2, 'Priority')
+    row1.write(3, 'Summary')
+    row1.write(4, 'Major Area')
+    row1.write(5, 'Product Area')
+    row1.write(6, 'Assignee')
+    row1.write(7, 'Assignee Full Name')
+    row1.write(8, 'Status')
+    row1.write(9, 'Status Details')
+    row1.write(10, 'Not_a_child')
+    row1.write(11, 'Product Release')
+    row1.write(12, 'Customer Issue')
+    row1.write(13, 'Create Time')
+    row1.write(14, 'From_value')
+    row1.write(15, 'To_value')
+    row1.write(16, 'Touched Time')
+    row1.write(17, 'Touched man')
+    row1.write(18, 'AT_In_date')
+    row1.write(19, 'AT_In_man')
+    row1.write(20, 'AT_Out_date')
+    row1.write(21, 'AT_Out_man')
+    row1.write(22, 'AT_Dup_date')
+    row1.write(23, 'AT_Dup_man')
+    row1.write(24, 'AT_Fix_date')
+    row1.write(25, 'AT_Fix_man')
+    row1.write(26, 'AT_Dis_date')
+    row1.write(27, 'AT_Dis_man')
+    row1.write(28, 'In Time')
+    row1.write(29, 'Out Time')
+    row1.write(30, 'Out Man')
+    row1.write(31, 'comments')
+
+    for k in ar.keys():
+        # print k
+        if ar[k]["hide"] < 2:
+            rn = rn + 1
+            rown = sht1.row(rn)
+            for key, value in ar[k].iteritems():
+                if key == "entry_id":
+                    rown.write(0, str(value))
+                elif key == "type":
+                    rown.write(1, str(value))
+                elif key == "priority":
+                    rown.write(2, str(value))
+                elif key == "summary":
+                    rown.write(3, str(value))
+                elif key == "major_area":
+                    rown.write(4, str(value))
+                elif key == "product_area":
+                    rown.write(5, str(value))
+                elif key == "assignee":
+                    rown.write(6, str(value))
+                elif key == "assignee_fname":
+                    rown.write(7, str(value))
+                elif key == "status":
+                    if value == 0:
+                        rown.write(8, "Open")
+                    elif value == 1:
+                        rown.write(8, "Dismissed")
+                    elif value == 2:
+                        rown.write(8, "In-progress")
+                    elif value == 3:
+                        rown.write(8, "Fixed")
+                    elif value == 4:
+                        rown.write(8, "WOO")
+                    else:
+                        rown.write(8, "Unknown")
+                elif key == "status_details":
+                    rown.write(9, value)
+                elif key == "not_a_child":
+                    if value == 0:
+                        rown.write(10, "Y")
+                    else:
+                        rown.write(10, "N")
+                elif key == "product_release":
+                    rown.write(11, str(value))
+                elif key == "customer_issue":
+                    if value == 0:
+                        rown.write(12, "Y")
+                    else:
+                        rown.write(12, "N")
+                elif key == "create_time":
+                    date_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
+                    rown.write(13, date_str)
+                elif key == "from_value":
+                    rown.write(14, str(value))
+                elif key == "to_value":
+                    rown.write(15, str(value))
+                elif key == "touch_date":
+                    date_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
+                    rown.write(16, date_str)
+                elif key == "touch_man":
+                    rown.write(17, str(value))
+                elif key == "ati_time":
+                    date_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
+                    rown.write(18, date_str)
+                elif key == "ati_man":
+                    rown.write(19, str(value))
+                elif key == "ato_time":
+                    date_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
+                    rown.write(20, date_str)
+                elif key == "ato_man":
+                    rown.write(21, str(value))
+                elif key == "atd_time":
+                    date_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
+                    rown.write(22, date_str)
+                elif key == "atd_man":
+                    rown.write(23, str(value))
+                elif key == "atf_time":
+                    date_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
+                    rown.write(24, date_str)
+                elif key == "atf_man":
+                    rown.write(25, str(value))
+                elif key == "atm_time":
+                    date_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
+                    rown.write(26, date_str)
+                elif key == "atm_man":
+                    rown.write(27, str(value))
+                elif key == "in_time":
+                    date_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
+                    rown.write(28, date_str)
+                elif key == "out_time":
+                    date_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(value))
+                    rown.write(29, date_str)
+                elif key == "out_man":
+                    rown.write(30, str(value))
+                elif key == "error":
+                    rown.write(31, value)
+
+    print "DEBUG write to [" + outfile + "]"
+    wb.save(outfile)
+
+def get_one_week_in_out_ar(ar_one_week_in_out_obj_dict, parammap, start_date, end_date, record_file):
+    get_in_out_ar_from_audit_trail_with_rules(ar_one_week_in_out_obj_dict, parammap,
+                                              start_date, end_date)
+    # Get all Open/In-Progress/WOO ARs per product area
+    get_ar_created_in_time_range_per_product_area(ar_one_week_in_out_obj_dict, parammap,
+                                                  start_date, end_date)
+    # get_ar_created_pa_in_time_range_per_product_area(ar_one_week_in_out_obj_dict, parammap,
+    #                                               start_date, end_date)
+    # # Get all fixed or dismissed after target_time_head ARs per product area;the result is a subset of get_in_out_ar_from_audit_trail_with_rules,just used to update the in/out time.
+    get_ar_fixed_dismissed_in_time_range(ar_one_week_in_out_obj_dict, parammap, start_date,
+                                         end_date)
+    # #
+    get_ar_reopen_in_time_range(ar_one_week_in_out_obj_dict, parammap, start_date,end_date)
+    # update in/out time or other info.
+    process_ar_total_weekly_in_out(ar_one_week_in_out_obj_dict, parammap, start_date,
+                                   end_date)
+    filter_ar_with_release(ar_one_week_in_out_obj_dict, parammap, start_date,end_date, record_file)
+
+def get_ar_total_weekly_in_out(parammap, record_file, hist_needed = False):
+    """
+    get ar list from the remedy table 'Issue_Audit_join', these ars are created by other domain and assign to platform domain.
+    platform domain =>  other domains
+    :param parammap: parameters given by user
+    :param hist_needed: if need to get the historical weekly ars before the current week start.
+    :return: ar_date_cnt_dict - key is the date, value is a list with sequence [totoal_in, rls1_in, rls2_in, ...].
+    """
+    timer = TimeHelper()
+
+    cur_time = timer.get_mtime()
+    # get historical ARs before this week start(Monday)
+    if hist_needed:
+        start = "2017-01-02 9:00:00"
+        th_ta = time.strptime(start, "%Y-%m-%d %H:%M:%S")
+        start_sec = int(time.mktime(th_ta))
+        #end = "2017-05-07 11:22:00"
+        #th_tb = time.strptime(end, "%Y-%m-%d %H:%M:%S")
+        #end_sec = int(time.mktime(th_tb))
+        end_sec = cur_time
+        internal_sec = 7 * 24 * 60 * 60
+        while start_sec < end_sec:
+            ar_one_week_in_out_obj_dict = dict()
+            get_one_week_in_out_ar(ar_one_week_in_out_obj_dict, parammap, start_sec - internal_sec, start_sec, record_file)
+            save_weekly_ar(ar_one_week_in_out_obj_dict, start_sec)
+            start_sec += internal_sec
+
+    cur_mondaydate = timer.get_week_start(timer.get_mtime())
+    #get inout ar only when the current time is Sunday of this week
+    if (cur_time < cur_mondaydate + 24 * 60 * 60):
+        ar_one_week_in_out_obj_dict = dict()
+        get_one_week_in_out_ar(ar_one_week_in_out_obj_dict, parammap, cur_mondaydate - 7 * 24 * 60 * 60,
+                               cur_mondaydate, record_file)
+        save_weekly_ar(ar_one_week_in_out_obj_dict, cur_mondaydate - 7 * 24 * 60 * 60)
+
+    return 0
 
 def count_audit_in(llist,parammap):
     res = {}
     ayer = ArrayMapHelper()
     for i in llist:
-        k = get_ca_map_entry(parammap['major areas'],i.to_value)
+        k = get_ca_map_entry(parammap['platform domain'],i.to_value)
         #logger.debug("k :" + str(k))
-        ayer.update_oned_map_values(res, k + ' [In]')
+        ayer.update_oned_map_values(res, k + ' In')
     return res
 
-def get_audit_trail_out_list(parammap):
+def get_audit_trail_out_list(parammap, time_interval):
+    """
+    get ar list from the remedy table 'Issue_Audit_join', these ars are created by platform domain and assign to other domains.
+    platform domain => other domains
+    :param parammap: parameters given by user
+    :param time_interval: time interval such as daily, weekly.
+    :return: ar list
+    """
     timer = TimeHelper()
-    cur_date = timer.get_day_start(timer.get_mtime())- 24*60*60
-    pre_date = cur_date - 24*60*60
+    if time_interval == 'daily':
+        cur_date = timer.get_day_start(timer.get_mtime()) - 24 * 60 * 60
+        pre_date = cur_date - 24 * 60 * 60
+    elif time_interval == 'weekly':
+        cur_date = timer.get_week_start(timer.get_mtime())
+        pre_date = cur_date - 7 * 24 * 60 * 60
     res = []
     out_param = dict(parammap["audit trail param map"])
     out_param['From Time']=[str(pre_date),]
     out_param['To Time']=[str(cur_date),]
-    ca_dict = dict(parammap['major areas'])
+    ca_dict = dict(parammap['platform product areas'])
     for k, v in ca_dict.iteritems():
         if 'From Value' not in out_param.keys():
             out_param['From Value'] = list(v)
         else:
             out_param['From Value'] += list(v)
+
     dber = DatabaseHelper()
-    print out_param
+    #print out_param
     for e in dber.get_AR_from_audit_trail(out_param)[0]:
-        res.append(generate_audit_trail_obj(e))
+        # remove the ars whose 'From Value' should not in platform domain
+        if e[1][536870917] not in out_param['From Value']:
+            res.append(generate_audit_trail_obj(e))
+        else:
+            logger.debug(
+                "This ar's to value is " + e[1][536870917] + " which should not be in platform product areas.")
     return res
 
 def count_audit_out(llist,parammap):
     res = {}
     ayer = ArrayMapHelper()
     for i in llist:
-        k = get_ca_map_entry(parammap['major areas'], i.from_value)
-        ayer.update_oned_map_values(res, k + ' [Out]')
+        k = get_ca_map_entry(parammap['platform domain'], i.from_value)
+        ayer.update_oned_map_values(res, k + ' Out')
     return res
 
-def update_total_in_out_record_file(ddict, entries, file):
+def update_total_in_out_record_file(cnt_in, cnt_out, file):
     timer = TimeHelper()
-    cur_date = timer.get_day_start(timer.get_mtime())
-    pre_date = cur_date - 24*60*60
-    timestamp = timer.mtime_to_local_date(pre_date)
+    cur_date = timer.get_week_start(timer.get_mtime())
+    #pre_date = cur_date - 7*24*60*60
+    timestamp = timer.mtime_to_local_date(cur_date)
 
-    logger.debug("[update_total_in_out_record_file]ddict :")
-    logger.debug(str(ddict))
-
-    in_total = 0
-    out_total = 0
-    for key in sorted(ddict.keys()):
-
-        if key.find('In') != -1:
-            in_total += ddict[key]
-        elif key.find('Out') != -1:
-            out_total += ddict[key]
+    logger.debug("[update_total_weekly_in_out_record_file]")
+    #logger.debug(str(ddict))
 
     csvstr = timestamp
     header = 'Date'
-    for k in entries:
-        header += ',' + k
-        if k in ddict.keys():
-            csvstr += ',' + str(int(ddict[k]))
-        else:
-            csvstr += ',0'
-    csvstr += ',' + str(in_total) + ',' + str(out_total) + '\n'
+    csvstr += ',' + str(cnt_in) + ',' + str(cnt_out) + '\n'
     header += ',' + 'Total In' + ',' + 'Total Out' + '\n'
 
-
-    logger.debug("in_total : "+str(in_total))
-    logger.debug("out_total : "+str(out_total))
     logger.debug('headers: '+str(header))
     logger.debug('csvstr: '+str(csvstr))
 
@@ -692,12 +1486,13 @@ def get_ars_assigned_to_manager(ar_obj_list, parammap, files_to_send):
         return
 
     ar_obj_list += get_ar_obj_list(rawars)
-    #dd ARs assigned to ca
+    #add ARs assigned to ca
     if "major area managers" in parammap.keys():
        add_assigned_to_ca(ar_obj_list,parammap["major area managers"])
 
     #save AR list to excel && append excel to sharepoint
-    save_to_excel = dataprefix + parammap['report name'].replace(' ', '') + '_ARs_Total_List.xls'
+    file_date = time.strftime('%Y%m%d_%H%M',time.localtime(time.time()))
+    save_to_excel = data_daily_openar_prefix + 'ARs_Daily_Total_List_' + file_date + '.xls'
     save_AR_list_to_excel(ar_obj_list, save_to_excel)
     files_to_send['attachment'].append(save_to_excel)
     #sharepoint_files.append(ar_list_save_to_excel)
@@ -711,30 +1506,123 @@ def ar_total_report(ar_obj_list, bugmap, parammap, files_to_send):
     logger.debug("bugmap : "+str(bugmap))
     files_to_send["image"].append(save_to_png)
 
-def ar_total_in_out_trend_report(parammap, files_to_send):
-    logger.debug("-"*40 + "[ar_total_in_out_trend_report]" + "-"*40)
+# def ar_total_in_out_trend_report(parammap, files_to_send):
+#     logger.debug("-"*40 + "[ar_total_in_out_trend_report]" + "-"*40)
+#
+#     ar_date_cnt_dict = get_audit_trail_list(parammap, 'daily')
+#     in_map = count_audit_in(audit_in_list,parammap)
+#     audit_out_list = get_audit_trail_out_list(parammap, 'daily')
+#     out_map = count_audit_out(audit_out_list,parammap)
+#     #append out_map to in_map
+#     in_map.update(out_map)
+#
+#     record_file = dataprefix + '[21]' + parammap["report name"].replace(' ', '') + '_ARs_Total_In_Out.csv'
+#     trend_record_file = dataprefix + '[22]' + parammap["report name"].replace(' ', '') + '_ARs_Total_In_Out_Trend.csv'
+#     entries = sorted([ca+' In' for ca in parammap["major area managers"]] + [ca+' Out' for ca in parammap["major area managers"]])
+#     #logger.debug('entries : '+str(entries))
+#
+#     update_total_in_out_record_file(in_map, entries, record_file)
+#     ar_records_cnt = generate_AR_trends_report_data_file(28, record_file, trend_record_file)
+#
+#     #draw total ar in/out trend chart
+#     date_x_unit = calc_date_x_unit(ar_records_cnt)
+#     title = parammap['report name'].replace(' ', '') + ' Total ARs In/Out Trend'
+#     lines = ['Total In', 'Total Out']
+#     save_to_png = pngprefix + '[02]' + parammap["report name"].replace(' ', '') + '_ARs_Total_In_Out_Trend.png'
+#     grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
+#     files_to_send["image"].append(save_to_png)
 
-    audit_in_list = get_audit_trail_in_list(parammap)
-    in_map = count_audit_in(audit_in_list,parammap)
-    audit_out_list = get_audit_trail_out_list(parammap)
-    out_map = count_audit_out(audit_out_list,parammap)
-    in_map.update(out_map)
+def join2dicts(dict_in, dict_out):
+    """
+    Join two dicts into one dict with all values.
+    e.g., {date1, list_in} + {date1, list_out} => {date1, [list_in,list_out]}
+    :param dict_in:
+    :param dict_out:
+    :return: dict_inout
+    """
+    from collections import Counter
+    dict_in, dict_out = Counter(dict_in), Counter(dict_out)
+    dict_inout = dict(dict_in + dict_out)
+    return dict_inout
 
-    record_file = dataprefix + '[21]' + parammap["report name"].replace(' ', '') + '_ARs_Total_In_Out.csv'
-    trend_record_file = dataprefix + '[22]' + parammap["report name"].replace(' ', '') + '_ARs_Total_In_Out_Trend.csv'
-    entries = sorted([ca+' In' for ca in parammap["major area managers"]] + [ca+' Out' for ca in parammap["major area managers"]])
-    #logger.debug('entries : '+str(entries))
+def update_weekly_in_out_record_file(parammap, ar_date_cnt_dict, file):
+    """
+    update all the records from audit table to file which names such as [21]CommonPlatform_ARs_Total_Weekly_In_Out_Trend.csv
+    :param parammap:
+    :param ar_date_cnt_dict:
+    :param file:
+    :return: None
+    """
+    header = 'Date' + ',' + 'Total_In'
+    for rls in parammap["audit trail param map"]["Specific Product Release"]:
+        rls = rls.replace('"', '')
+        header += ',' + rls + '_In'
 
-    update_total_in_out_record_file(in_map, entries, record_file)
-    ar_records_cnt = generate_AR_trends_report_data_file(28, record_file, trend_record_file)
+    header += ',' + 'Total_Out'
 
-    #draw total ar in/out trend chart
-    date_x_unit = calc_date_x_unit(ar_records_cnt)
-    title = parammap['report name'].replace(' ', '') + ' Total ARs In/Out Trend'
-    lines = ['Total In', 'Total Out']
-    save_to_png = pngprefix + '[02]' + parammap["report name"].replace(' ', '') + '_ARs_Total_In_Out_Trend.png'
-    grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
+    for rls in parammap["audit trail param map"]["Specific Product Release"]:
+        rls = rls.replace('"', '')
+        header += ',' + rls + '_Out'
+
+    header += '\n'
+
+    timestamp = timer.mtime_to_local_date(timer.get_mtime())
+
+    sorted_date_list = ar_date_cnt_dict.keys()
+    sorted_date_list.sort()
+    for date in sorted_date_list:
+        csvstr = timer.mtime_to_local_date(date)
+        for cnt in ar_date_cnt_dict[date]:
+            csvstr += ',' + str(cnt)
+        csvstr += '\n'
+        update_last_record(file, timestamp, csvstr, header)
+
+def draw_weekly_total_inout_trend_chart(parammap, record_file, files_to_send):
+    """
+    Draw the ARs Total Weekly In/Out Trend chart.
+    :param parammap:
+    :param record_file:
+    :param files_to_send:
+    :return:
+    """
+    date_x_unit = 'weekly'
+    title = parammap['report name'].replace(' ', '') + ' ARs Total Weekly In/Out Trend'
+    lines = ['Total_In', 'Total_Out']
+    save_to_png = pngprefix + '[11]' + parammap["report name"].replace(' ', '') + '_ARs_Total_Weekly_In_Out_Trend.png'
+    grapher.draw_trent_chart(record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
     files_to_send["image"].append(save_to_png)
+
+def draw_weekly_release_inout_trend_chart(parammap, record_file, files_to_send):
+    """
+    Draw the ARs Weekly In/Out Trend of product release configured in .json file.
+    :param parammap:
+    :param record_file:
+    :param files_to_send:
+    :return:
+    """
+    date_x_unit = 'weekly'
+    for rls in parammap["audit trail param map"]["Specific Product Release"]:
+        rls = rls.replace('"', '')
+        title = parammap['report name'].replace(' ', '') + ' ARs ' + rls + ' Weekly In/Out Trend'
+        lines = [rls + '_In', rls + '_Out']
+        save_to_png = pngprefix + '[12]' + parammap["report name"].replace(' ', '') + '_ARs_' + rls + '_Weekly_In_Out_Trend.png'
+        grapher.draw_trent_chart(record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
+        files_to_send["image"].append(save_to_png)
+
+def ar_total_weekly_in_out_trend_report(parammap, files_to_send):
+    """
+    Get in/out ar lists from audit table; save the results into a file; draw the trend chart.
+    :param parammap:
+    :param files_to_send:
+    :return: None
+    """
+    logger.debug("-"*40 + "[ar_total_weekly_in_out_trend_report]" + "-"*40)
+    hist_needed = parammap["audit trail param map"]["Get AR from the begining of this year"]
+    record_file = data_csvprefix + '[11]' + parammap["report name"].replace(' ', '') + '_ARs_Total_Weekly_In_Out_Trend.csv'
+    get_ar_total_weekly_in_out(parammap, record_file, hist_needed)
+
+    draw_weekly_total_inout_trend_chart(parammap, record_file, files_to_send)
+    draw_weekly_release_inout_trend_chart(parammap, record_file, files_to_send)
 
 def ar_total_age_report(ar_obj_list, parammap, files_to_send):
     logger.debug("-"*40 + "[ar_total_age_report]" + "-"*40)
@@ -747,16 +1635,16 @@ def ar_total_age_report(ar_obj_list, parammap, files_to_send):
 def ar_total_trend_report(bugmap, parammap, files_to_send):
     logger.debug("-"*40 + "[ar_total_trend_report]" + "-"*40)
     summary_releases = sorted(parammap['assinged to manager param map']["Product Release"])
-    record_file = dataprefix + '[31]' + parammap['report name'].replace(' ', '') + "_ARs_Total.csv"
-    trend_record_file = dataprefix + '[32]' + parammap['report name'].replace(' ', '') + "_ARs_Total_Trend.csv"
+    record_file = data_csvprefix + '[01]' + parammap['report name'].replace(' ', '') + "_ARs_Total.csv"
+    trend_record_file = data_csvprefix + '[04]' + parammap['report name'].replace(' ', '') + "_ARs_Total_Trend.csv"
     update_AR_summary_history_file(bugmap, summary_releases, record_file)
-    ar_records_cnt = generate_AR_trends_report_data_file(128, record_file, trend_record_file)
+    ar_records_cnt = generate_AR_trends_report_data_file(365, record_file, trend_record_file)
 
     date_x_unit = calc_date_x_unit(ar_records_cnt)
     title = parammap['report name'].replace(' ', '') + ' Total ARs Trend'
     lines = ['Total']
     save_to_png = pngprefix + '[04]' + parammap['report name'].replace(' ', '') + '_ARs_Total_Trend.png'
-    grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 20, date_x_unit, save_to_png)
+    grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
     files_to_send["image"].append(save_to_png)
 
 def ar_direct_manager_report(ar_obj_list, parammap, files_to_send):
@@ -773,7 +1661,7 @@ def ar_tbv_report(parammap, files_to_send):
         tbvobjlist = get_ar_obj_list(tbv_list, 1)
         if "major area managers" in parammap.keys():
             add_assigned_to_ca(tbvobjlist, parammap["major area managers"])
-        save_to_excel = dataprefix + parammap['report name'].replace(' ', '') + '_ARs_TBV_List.xls'
+        save_to_excel = data_daily_openar_prefix + parammap['report name'].replace(' ', '') + '_ARs_TBV_List.xls'
         save_AR_list_to_excel(tbvobjlist, save_to_excel, 1)
         files_to_send['attachment'].append(save_to_excel)
         title = parammap['report name'].replace(' ', '') + ' Total TBV ARs for Direct Manager'
@@ -812,10 +1700,10 @@ def releases_report(ar_obj_list, parammap, files_to_send):
             csvstr = csvstr + ',' + str(len(ar_count_map[ca]))
         header = header + ',CA Total,Domain Total' + '\n'
         csvstr = csvstr + ',' + str(ca_total) + ',' + str(domain_total) + '\n'
-        ca_record_file = dataprefix + '[50]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total.csv'
-        trend_ca_record_file = dataprefix + '[50]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total_Trend.csv'
+        ca_record_file = data_csvprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total.csv'
+        trend_ca_record_file = data_csvprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total_Trend.csv'
         update_last_record(ca_record_file, timestamp, csvstr, header)
-        ar_records_cnt = generate_AR_trends_report_data_file(28, ca_record_file, trend_ca_record_file)
+        ar_records_cnt = generate_AR_trends_report_data_file(365, ca_record_file, trend_ca_record_file)
 
         #calculate the x_unit
         date_x_unit = calc_date_x_unit(ar_records_cnt)
@@ -836,14 +1724,14 @@ def releases_report(ar_obj_list, parammap, files_to_send):
             csvstr = csvstr + ',' + str(bug_age_map[week_duration]['Total'])
         header = header + ',Total,>1 week,>2 days' + '\n'
         csvstr = csvstr + ',' + str(num_total) + ',' + str(num_older_than_one_week) + ',' + str(num_older_than_twos_days) + '\n'
-        age_record_file = dataprefix + '[50]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total_Age.csv'
+        age_record_file = data_csvprefix + '[07]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total_Age.csv'
         update_last_record(age_record_file, timestamp, csvstr, header)
 
         #draw release domain total trend chart
         lines = ['Domain Total']
         title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' ARs Total Trend'
         save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Trend.png'
-        grapher.draw_trent_chart(trend_ca_record_file, lines, title, 14, 4, 20, date_x_unit, save_to_png)
+        grapher.draw_trent_chart(trend_ca_record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
         files_to_send["image"].append(save_to_png)
 
         '''
@@ -860,7 +1748,7 @@ def releases_report(ar_obj_list, parammap, files_to_send):
         #draw CAs' release trend lines all in one chart
         title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' ARs CA Trend'
         lines = cas
-        save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Trend_by_CA.png'
+        save_to_png = pngprefix + '[09]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Trend_by_CA.png'
         grapher.draw_trent_chart(trend_ca_record_file, lines, title, 14, 4, 2, date_x_unit, save_to_png)
         files_to_send["image"].append(save_to_png)
 
@@ -870,7 +1758,7 @@ def releases_report(ar_obj_list, parammap, files_to_send):
             if len(ca_ar_obj_list) != 0:
                 title = parammap['report name'].replace(' ', '') + ' ' + ca + ' ' + rel.replace(' ','') +' ARs by Age'
                 color_set = COLOR_SETS[((parammap['report releases'].index(rel))+1)%len(COLOR_SETS)]
-                save_to_png = pngprefix + '[12]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_' + ca + '_ARs_by_Age.png'
+                save_to_png = pngprefix + '[10]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_' + ca + '_ARs_by_Age.png'
                 total_age_report(ca_ar_obj_list, title, color_set, save_to_png)
                 files_to_send["image"].append(save_to_png)
 
@@ -897,10 +1785,10 @@ def releases_trend_report(ar_obj_list, parammap, files_to_send):
             csvstr += ',' + str(len(ar_count_map[ca]))
         header = header + ',' + 'Total' + '\n'
         csvstr = csvstr + ',' + str(total) + '\n'
-        record_file = dataprefix + '[50]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total.csv'
-        trend_record_file = dataprefix + '[50]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total_Trend.csv'
+        record_file = data_csvprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total.csv'
+        trend_record_file = data_csvprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total_Trend.csv'
         update_last_record(record_file, timestamp, csvstr, header)
-        ar_records_cnt = generate_AR_trends_report_data_file(28, record_file, trend_record_file)
+        ar_records_cnt = generate_AR_trends_report_data_file(365, record_file, trend_record_file)
 
         date_x_unit = calc_date_x_unit(ar_records_cnt)
 
@@ -925,7 +1813,7 @@ def releases_trend_report(ar_obj_list, parammap, files_to_send):
             if len(ca_ar_obj_list) != 0:
                 title = ca + ' ' + rel.replace(' ','') +' ARs by Age'
                 color_set = COLOR_SETS[((parammap['age report releases'].index(rel))+1)%len(COLOR_SETS)]
-                save_to_png = pngprefix + '[12]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_' + ca + '_ARs_by_Age.png'
+                save_to_png = pngprefix + '[9]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_' + ca + '_ARs_by_Age.png'
                 total_age_report(ca_ar_obj_list, title, color_set, save_to_png)
                 files_to_send["image"].append(save_to_png)
 
@@ -944,7 +1832,7 @@ def ar_blocking_report(ar_obj_list, parammap, files_to_send):
         files_to_send["image"].append(save_to_png)
 
 def init_dir():
-    dir_list = [dataprefix, pngprefix, logprefix]
+    dir_list = [dataprefix, data_csvprefix, data_daily_openar_prefix, data_weekly_inoutar_prefix, pngprefix, logprefix]
     for dir in dir_list:
         if not os.path.exists(dir):
             os.makedirs(dir)
@@ -966,6 +1854,7 @@ def calc_date_x_unit(ar_records_cnt):
     return date_x_unit
 
 def main():
+    start = time.clock()
     parammap = init_param(arg_parser()) #init parameters
     init_dir()  #make directories: data, png and log
     files_to_send = {}
@@ -973,22 +1862,24 @@ def main():
     files_to_send["image"] = []
     additional_body = ""
     ar_obj_list = []
+    ar_in_out_obj_dict = dict()
     bugmap = dict()
     logger.debug("="*25 + "Start" + "="*25 + "\n" + "-"*25 + "REPORT NAME: " + parammap['report name'] + "-"*25)
-
     get_ars_assigned_to_manager(ar_obj_list, parammap, files_to_send)
     ar_blocking_report(ar_obj_list, parammap, files_to_send)
     ar_total_report(ar_obj_list, bugmap, parammap, files_to_send)
-    #ar_total_in_out_trend_report(parammap, files_to_send)
     ar_total_age_report(ar_obj_list, parammap, files_to_send)
     ar_total_trend_report(bugmap, parammap, files_to_send)
     ar_direct_manager_report(ar_obj_list, parammap, files_to_send)
     ar_tbv_report(parammap, files_to_send)
     #ar_radar_report.radar_report(parammap, files_to_send)
     releases_report(ar_obj_list, parammap, files_to_send)
+    ar_total_weekly_in_out_trend_report( parammap, files_to_send)
     logger.debug(bugmap.keys())
     sent_report_email(parammap, files_to_send, bugmap.keys(), additional_body)
     logger.debug("="*25 + "End" + "="*25)
+    total_time = time.clock() - start
+    print("total time(mins): ", total_time/60)
     return 0
 
 if __name__ == '__main__':

@@ -6,13 +6,15 @@
      "Type":["\"Bug\""],
      "Parent Bug #": ["\"$NULL$\""],
      "Priority":["\"P00\"","\"P01\"","\"P02\""],
-     "Product Family": ["\"Unified Systems\""],
+     "Product Family": ["\"Unified Systems\"", "\"NGM\""],
      "No Product Family" : ["\"USD Test\"", "\"CTD SSIE\""],
-     "Product Release":["\"Merlin\"",
+     "Product Release":["\"Merlin\"", "\"Merlin SP1\"", "\"Harrier\"",
                         "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                         "\"Bearcat\"","\"Bearcat SP1\"",
-                        "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\""]
+                        "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
+                        "\"Smuttynose\"",
+                        "\"Unity 4.x\""]
   },
   "reported by manager param map":{
      "Senior Manager" : [ "\"Pu, John\""],
@@ -21,28 +23,53 @@
      "Type":["\"Bug\""],
      "Parent Bug #": ["\"$NULL$\""],
      "Priority":["\"P00\"","\"P01\"","\"P02\""],
-     "Product Family": ["\"Unified Systems\""],
+     "Product Family": ["\"Unified Systems\"", "\"NGM\""],
      "No Product Family" : ["\"USD Test\"", "\"CTD SSIE\""],
-     "Product Release":["\"Merlin\"",
+     "Product Release":["\"Merlin\"", "\"Merlin SP1\"", "\"Harrier\"",
                         "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                         "\"Bearcat\"","\"Bearcat SP1\"",
-                        "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\""]
+                        "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
+                        "\"Smuttynose\"",
+                        "\"Unity 4.x\""]
   },
   "audit trail param map":{
-      "Attribute Label":["\"Major Area\""],
+      "Attribute Label":["\"Product Area\""],
       "Type":["\"Bug\""],
       "Priority":["\"P00\"","\"P01\"","\"P02\""],
-      "Product Release":["\"Merlin\"",
-                         "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
-                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
-                         "\"Bearcat\"","\"Bearcat SP1\"",
-                         "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\""]
+      "Product Family": ["\"Unified Systems\"", "\"NGM\""],
+      "No Product Family" : ["\"USD Test\"", "\"CTD SSIE\""],
+      "Product Release":["\"Merlin\"", "\"Merlin SP1\"", "\"Harrier\"",
+                        "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
+                        "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
+                        "\"Bearcat\"","\"Bearcat SP1\"",
+                        "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
+                        "\"Smuttynose\"",
+                        "\"Unity 4.x\""],
+      "Specific Product Release":["\"Merlin\"", "\"Unity 4.x\""],
+      "Get AR from the begining of this year": 0
   },
-  "major areas":{
+  "platform domain":{
       "Platform Core":["\"Platform Core\""],
-      "SLICs, Protocols and Backend":["\"Back End Protocols\"","\"Block Front End Protocols\"","\"Host access\"",
-                                      "\"Hostside\"","\"IoRedirector\"","\"Network Config\"","\"Network\"","\"SLIC Management\""]
+      "SLICs Protocols and Backend":["\"Back End Protocols\"","\"Block Front End Protocols\"","\"Host access\"",
+                                      "\"Platform Integration\"","\"SLIC Management\""]
+  },
+  "platform product areas":{
+      "product area names":["\"Environmental Services - FBE\"","\"Environmental Services - GUI, CLI, REST\"",
+                            "\"FC\"","\"FCoE\"","\"iSCSI\"",
+                            "\"SAS Driver\"","\"SAS Frimware\"","\"SAS UEFI\"",
+                            "\"Host Access\"",
+                            "\"CSX\"","\"Firmware\"","\"Hardware\"","\"Kernel\"","\"Platform\"",
+                            "\"CLI\"","\"GUI\"","\"Health and Alerts\"","\"Providers\"","\"REST\"",
+                            "\"Hyperion Triage\"","\"Oberon Triage\""]
+  },
+  "platform product areas not in platform services":{
+      "product area names":["\"Software Upgrades - Core\"","\"Software Upgrades - Health Checks\"","\"Software Upgrades - Control Path\"",
+                            "\"System Config - C4LX Distribution & Infrastructure\"","\"System Config - Imaging\"","\"System Resource Services - CF, HA\"",
+                            "\"App Services - PSM\"","\"App Services - Licensing\"","\"App Services - Misc\""]
+  },
+  "platform product areas in platform services":{
+      "product area names":["\"Environmental Services - FBE\"","\"Environmental Services - GUI, CLI, REST\""]
   },
   "major area managers":{
       "Platform Core":["\"Ramadurai, Balaji\"","\"Hanna, Bill\"","\"Jayanty, Ramanamurthy\"","\"Jones, Greg\"", "\"Zhang, Haohan\"","\"Li, Leon\""],
