@@ -77,7 +77,7 @@
                                      "\"Liu, Andy(Yang)\"","\"Wang, Eric X\"","\"Tang, Guifeng\"","\"Chang, Rui\""]
   },
   "report releases":["Merlin"],
-  "to":"Winnie.Fan@emc.com",
-  "cc":"Winnie.Fan@emc.com",
+  "to":"John.Pu@emc.com;Balaji.Ramadurai@emc.com;konrad.dobkowski@emc.com;vicky.guo@emc.com;sam.yan@emc.com;Dynesy.Yuan@emc.com",
+  "cc":"Leon.Li@emc.com",
   "bcc":"Winnie.Fan@emc.com"
 }
