@@ -1585,11 +1585,11 @@ def draw_weekly_total_inout_trend_chart(parammap, record_file, files_to_send):
     :param files_to_send:
     :return:
     """
-    date_x_unit = 'weekly'
+
     title = parammap['report name'].replace(' ', '') + ' ARs Total Weekly In/Out Trend'
     lines = ['Total_In', 'Total_Out']
     save_to_png = pngprefix + '[11]' + parammap["report name"].replace(' ', '') + '_ARs_Total_Weekly_In_Out_Trend.png'
-    grapher.draw_trent_chart(record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
+    grapher.draw_trent_chart(record_file, lines, title, 14, 4, 5, save_to_png)
     files_to_send["image"].append(save_to_png)
 
 def draw_weekly_release_inout_trend_chart(parammap, record_file, files_to_send):
@@ -1600,13 +1600,13 @@ def draw_weekly_release_inout_trend_chart(parammap, record_file, files_to_send):
     :param files_to_send:
     :return:
     """
-    date_x_unit = 'weekly'
+
     for rls in parammap["audit trail param map"]["Specific Product Release"]:
         rls = rls.replace('"', '')
         title = parammap['report name'].replace(' ', '') + ' ARs ' + rls + ' Weekly In/Out Trend'
         lines = [rls + '_In', rls + '_Out']
         save_to_png = pngprefix + '[12]' + parammap["report name"].replace(' ', '') + '_ARs_' + rls + '_Weekly_In_Out_Trend.png'
-        grapher.draw_trent_chart(record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
+        grapher.draw_trent_chart(record_file, lines, title, 14, 4, 5, save_to_png)
         files_to_send["image"].append(save_to_png)
 
 def ar_total_weekly_in_out_trend_report(parammap, files_to_send):
@@ -1641,11 +1641,10 @@ def ar_total_trend_report(bugmap, parammap, files_to_send):
     update_AR_summary_history_file(bugmap, summary_releases, record_file)
     ar_records_cnt = generate_AR_trends_report_data_file(365, record_file, trend_record_file)
 
-    date_x_unit = calc_date_x_unit(ar_records_cnt)
     title = parammap['report name'].replace(' ', '') + ' Total ARs Trend'
     lines = ['Total']
     save_to_png = pngprefix + '[04]' + parammap['report name'].replace(' ', '') + '_ARs_Total_Trend.png'
-    grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
+    grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 5, save_to_png)
     files_to_send["image"].append(save_to_png)
 
 def ar_direct_manager_report(ar_obj_list, parammap, files_to_send):
@@ -1706,8 +1705,6 @@ def releases_report(ar_obj_list, parammap, files_to_send):
         update_last_record(ca_record_file, timestamp, csvstr, header)
         ar_records_cnt = generate_AR_trends_report_data_file(365, ca_record_file, trend_ca_record_file)
 
-        #calculate the x_unit
-        date_x_unit = calc_date_x_unit(ar_records_cnt)
         #update age record file
         bug_age_map = count_bug_age(ars)
         timestamp = timer.mtime_to_local_date(timer.get_mtime())
@@ -1732,7 +1729,7 @@ def releases_report(ar_obj_list, parammap, files_to_send):
         lines = ['Domain Total']
         title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' ARs Total Trend'
         save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Trend.png'
-        grapher.draw_trent_chart(trend_ca_record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
+        grapher.draw_trent_chart(trend_ca_record_file, lines, title, 14, 4, 5, save_to_png)
         files_to_send["image"].append(save_to_png)
 
         '''
@@ -1750,7 +1747,7 @@ def releases_report(ar_obj_list, parammap, files_to_send):
         title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' ARs CA Trend'
         lines = cas
         save_to_png = pngprefix + '[09]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Trend_by_CA.png'
-        grapher.draw_trent_chart(trend_ca_record_file, lines, title, 14, 4, 2, date_x_unit, save_to_png)
+        grapher.draw_trent_chart(trend_ca_record_file, lines, title, 14, 4, 2, save_to_png)
         files_to_send["image"].append(save_to_png)
 
         #draw release age report table for per CA
@@ -1791,8 +1788,6 @@ def releases_trend_report(ar_obj_list, parammap, files_to_send):
         update_last_record(record_file, timestamp, csvstr, header)
         ar_records_cnt = generate_AR_trends_report_data_file(365, record_file, trend_record_file)
 
-        date_x_unit = calc_date_x_unit(ar_records_cnt)
-
         #draw CAs' target VS total trend chart
         ar_history_data = read_csv(trend_record_file)
         title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' ARs Total vs Target'
@@ -1805,7 +1800,7 @@ def releases_trend_report(ar_obj_list, parammap, files_to_send):
         title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' CA ARs Trend'
         lines = cas
         save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Trend_by_CA.png'
-        grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 2, date_x_unit, save_to_png)
+        grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 2, save_to_png)
         files_to_send["image"].append(save_to_png)
 
         #draw release age report table for per CA
@@ -1837,22 +1832,6 @@ def init_dir():
     for dir in dir_list:
         if not os.path.exists(dir):
             os.makedirs(dir)
-
-
-def calc_date_x_unit(ar_records_cnt):
-    """
-    Calculate the x_unit when x aixs is date.
-    :param ar_records_cnt: the count of AR records
-    :return date_x_unit: daily/weekly/monthly
-    """
-    if (ar_records_cnt <= 7):
-        date_x_unit = "daily"
-    elif (ar_records_cnt > 7 and ar_records_cnt <= 70):
-        date_x_unit = "weekly"
-    else:
-        date_x_unit = "monthly"
-
-    return date_x_unit
 
 def main():
     start = time.clock()

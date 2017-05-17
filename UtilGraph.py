@@ -154,7 +154,7 @@ class GraphHelper:
                 if abs(llist[j][1] - pre) < gap:
                     llist[j][1] += gap - abs(llist[j][1] - pre)
 
-    def draw_trent_chart(self, file, field_list, title_str, plt_width, plt_height, y_unit, x_unit, save_to_file):
+    def draw_trent_chart(self, file, field_list, title_str, plt_width, plt_height, y_unit, save_to_file):
         """
         Draws trent chart
         :param field_list: releases to de drawn
@@ -169,6 +169,7 @@ class GraphHelper:
         mather = MathHelper()
         #if the column num of data in csv are different, read_csv will fail. But you can add error_bad_lines=False to ignore data's error.
         ar_history_data = read_csv(file)
+        x_unit = calc_date_x_unit(len(ar_history_data['Date']))
         # logger.debug("ar_history_data : " +str(ar_history_data))
         colors = [(31, 119, 180), (255, 127, 14), (174, 199, 232), (255, 187, 120),
                   (44, 160, 44), (152, 223, 138), (214, 39, 40), (255, 152, 150),
@@ -524,6 +525,20 @@ class GraphHelper:
         plt.title(title, y=1.08)
         plt.savefig(save_to, bbox_inches='tight')
 
+def calc_date_x_unit(ar_records_cnt):
+    """
+    Calculate the x_unit when x aixs is date.
+    :param ar_records_cnt: the count of AR records
+    :return date_x_unit: daily/weekly/monthly
+    """
+    if (ar_records_cnt <= 7):
+        date_x_unit = "daily"
+    elif (ar_records_cnt > 7 and ar_records_cnt <= 20):
+        date_x_unit = "weekly"
+    else:
+        date_x_unit = "monthly"
+
+    return date_x_unit
 
 if __name__ == '__main__':
     mmap = [["Program", "Blocker", "P0", "P1", "P2", "Total"], ["Bearcat", 1, 2, 3, 4, 5],
