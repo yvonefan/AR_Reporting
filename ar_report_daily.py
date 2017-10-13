@@ -25,6 +25,9 @@ from ARAuditTrail import *
 from RadarCrawler import *
 import ar_radar_report
 import xlwt
+import warnings
+from jira import JIRA
+
 
 __author__ = "Ming.Yao@emc.com"
 
@@ -48,6 +51,7 @@ excer = ExcelHelper(logger)
 dber = DatabaseHelper(logger)
 grapher = GraphHelper(logger)
 strer = StringHelper(logger)
+jira_session = None
 
 CUR_TIME = int(timer.get_mtime())
 CUR_WEEK_START_TIME = timer.get_week_start(CUR_TIME)
@@ -79,6 +83,8 @@ COLOR_SETS = [
 
 def arg_parser():
     parser = argparse.ArgumentParser(prog=__filename__,usage='%(prog)s [options]')
+    parser.add_argument('-u', nargs=1, dest='username', required=True)
+    parser.add_argument('-p', nargs=1, dest='password', required=True)
     parser.add_argument('-config','--configuration',help="provide configuration file",nargs=1)
     parser.add_argument('-t','--test',help="turn on test mode",action="store_true")
     return parser.parse_args()
@@ -92,24 +98,33 @@ def init_param(args):
             parammap['to'] = __author__
             parammap['cc'] = __author__
             parammap['bcc'] = __author__
+
+        parammap['user'] = args.username[0]
+        parammap['pwd'] = args.password[0]
         return parammap
 
 def get_ar_obj_list(rawars, isTBV=None):
     logger.debug("getting AR obj list ...")
     res = []
     for ar in rawars:
-        if isTBV:
-            (items, num) = dber.get_fixed_time_from_audit_trail_with_rules(ar[1][536870921])
-            #logger.debug("items :" + "\n" + str(items))
-            fixed_time_list = [item[1][536870929] for item in items]
-            final_fixed_time = max(fixed_time_list)
-            days_in_status = (CUR_TIME - final_fixed_time) / (24 * 60 * 60) + 1
-            logger.debug("AR Status: " + str(items[0][1][536870917]) + ", DaysInStatus: " + str(days_in_status))
-            ar[1]['days_in_status'] = days_in_status
-            #logger.debug("ar:" + "\n" + str(ar))
-        else:
-            ar[1]['days_in_status'] = None
-        ar_obj = generate_unity_ar_obj(ar)
+        #The ar is from Remedy if it is a list.
+        if isinstance(ar,list) and 536870921 in ar[1]:
+            ar_obj = generate_unity_ar_obj(ar)
+            if isTBV:
+                #tbv ar from remedy has no field days_in_status, so need to calculate it here.
+                (items, num) = dber.get_fixed_time_from_audit_trail_with_rules(ar[1][536870921])
+                fixed_time_list = [item[1][536870929] for item in items]
+                final_fixed_time = max(fixed_time_list)
+                days_in_status = (CUR_TIME - final_fixed_time) / (24 * 60 * 60) + 1
+                ar_obj.days_in_status = days_in_status
+        elif ar.key:
+            ar_obj = generate_cyclone_ar_obj(ar)
+            if isTBV:
+                final_fixed_time = ar_obj.days_in_status
+                final_fixed_time_sec = timer.cyc_strtime_to_timestamp(final_fixed_time)
+                days_in_status = (CUR_TIME - final_fixed_time_sec) / (24 * 60 * 60) + 1
+                ar_obj.days_in_status = days_in_status
+
         res.append(ar_obj)
     return res
 
@@ -208,7 +223,7 @@ def bug_total_report(arObjList, parammap, title, save_to_file):
     #2. Order releases(AR numbers > 0) from top to bottom in table by Json code(assinged to manager param map -> Product Release)
     table_product = arrayer.twod_map_to_report_table(map_product, 'Program', True)
     logger.debug("table_product :" + str(table_product))
-    custom_ordered_releases = [rel.replace('"', '') for rel in parammap['assinged to manager param map']['Product Release']]
+    custom_ordered_releases = [rel.replace('"', '') for rel in parammap['releases for total report']]
     releases_have_ars = [rel for rel in custom_ordered_releases if rel in bug_count_map.keys()]
     ordered_table_data = [line for rel in releases_have_ars for line in table_product[1:-1] if rel == line[0]]
     ordered_table_product = [table_product[0]] + ordered_table_data + [table_product[-1]]
@@ -230,7 +245,7 @@ def count_bug_older_than_two_days(ar_obj_list):
     two_day = 2*24*60*60
     count = 0
     for obj in ar_obj_list:
-        if (obj.product_family != 'Unified Systems') and (obj.product_family != 'Bearcat'):
+        if ('MDT' not in obj.entry_id ) and (obj.product_family != 'Unified Systems') and (obj.product_family != 'Bearcat'):
             continue
         tlen = current_time - obj.create_date
         if tlen > two_day:
@@ -242,7 +257,7 @@ def count_bug_older_than_one_week(ar_obj_list):
     one_week = 7*24*60*60
     count = 0
     for obj in ar_obj_list:
-        if (obj.product_family != 'Unified Systems') and (obj.product_family != 'Bearcat'):
+        if ('MDT' not in obj.entry_id ) and (obj.product_family != 'Unified Systems') and (obj.product_family != 'Bearcat'):
             continue
         tlen = current_time - obj.create_date
         if tlen > one_week:
@@ -261,7 +276,7 @@ def count_bug_age(ar_obj_list):
     oned_key_set =['0-1 week','1-2 week','2-3 week','3-4 week','4-5 week','5-6 week','>=6 week']
     twod_key_set = ['P00','P01','P02']
     for obj in ar_obj_list:
-        if (obj.product_family != 'Unified Systems') and (obj.product_family != 'Bearcat'):
+        if ('MDT' not in obj.entry_id ) and (obj.product_family != 'Unified Systems') and (obj.product_family != 'Bearcat'):
             continue
         tlen = current_time - obj.create_date
         if tlen < one_week:
@@ -1478,8 +1493,8 @@ def add_total(llist):
 
 #******************************************** reports ****************************************#
 
-def get_ars_assigned_to_manager(ar_obj_list, parammap, files_to_send):
-    logger.debug("[get_ars assigned to manager]......")
+def get_ars_assigned_in_Remedy(ar_obj_list, parammap):
+    logger.debug("[get_ars assigned to common platform team in Remedy]......")
     rawars, numrawars = dber.get_AR_from_assigned_to_manager(parammap['assinged to manager param map'])
     if numrawars == 0:
         logger.debug("No open AR ...")
@@ -1489,6 +1504,23 @@ def get_ars_assigned_to_manager(ar_obj_list, parammap, files_to_send):
     #add ARs assigned to ca
     if "major area managers" in parammap.keys():
        add_assigned_to_ca(ar_obj_list,parammap["major area managers"])
+
+def get_ars_assigned_in_Jira(ar_obj_list, parammap):
+    logger.debug("[get_ars assigned to common platform team in Jira]......")
+    mres_query_string = 'project = MDT AND "MRES Product" = Cyclone AND Release = Smuttynose AND issuetype = Bug AND status in (Open, "In Progress", Reopened, WOO) AND issueFunction not in hasLinks("duplicates(childof)") AND "Major Area" in ("IO Modules and Backend", "Storage Processor") AND priority in (P00,P01,P02) ORDER BY created DESC'
+    mres_max_results = 200
+    global jira_session
+    mres_open_issues = jira_session.search_issues(mres_query_string, startAt=0, maxResults=mres_max_results, expand="changelog")
+    if not mres_open_issues:
+        logger.debug("No open Jira AR ...")
+        return
+
+    ar_obj_list += get_ar_obj_list(mres_open_issues)
+
+def get_ars_assigned_to_common_platform(ar_obj_list, parammap, files_to_send):
+    logger.debug("[get_ars assigned to common platform]......")
+    get_ars_assigned_in_Remedy(ar_obj_list, parammap)
+    get_ars_assigned_in_Jira(ar_obj_list, parammap)
 
     #save AR list to excel && append excel to sharepoint
     file_date = time.strftime('%Y%m%d_%H%M',time.localtime(time.time()))
@@ -1635,7 +1667,7 @@ def ar_total_age_report(ar_obj_list, parammap, files_to_send):
 
 def ar_total_trend_report(bugmap, parammap, files_to_send):
     logger.debug("-"*40 + "[ar_total_trend_report]" + "-"*40)
-    summary_releases = sorted(parammap['assinged to manager param map']["Product Release"])
+    summary_releases = sorted(parammap['releases for total report'])
     record_file = data_csvprefix + '[01]' + parammap['report name'].replace(' ', '') + "_ARs_Total.csv"
     trend_record_file = data_csvprefix + '[04]' + parammap['report name'].replace(' ', '') + "_ARs_Total_Trend.csv"
     update_AR_summary_history_file(bugmap, summary_releases, record_file)
@@ -1656,7 +1688,20 @@ def ar_direct_manager_report(ar_obj_list, parammap, files_to_send):
 
 def ar_tbv_report(parammap, files_to_send):
     logger.debug("-"*40 + "[ar_tbv_direct_manager_report]" + "-"*40)
-    tbv_list, num_tbv = dber.get_AR_from_reported_to_manager(parammap['reported by manager param map'])
+    tbv_list_remedy, num_tbv_remedy = dber.get_AR_from_reported_to_manager(parammap['reported by manager param map'])
+
+    tbv_list_jira = []
+    logger.debug("[get TBV ars of common platform team in Jira]......")
+    mres_query_string = 'project = MDT AND "MRES Product" = Cyclone AND Release = Smuttynose AND issuetype = Bug AND status in (Resolved) AND issueFunction not in hasLinks("duplicates(childof)") AND "Major Area" in ("IO Modules and Backend", "Storage Processor") AND priority in (P00,P01,P02) ORDER BY created DESC'
+    mres_max_results = 200
+    global jira_session
+    tbv_list_jira = jira_session.search_issues(mres_query_string, startAt=0, maxResults=mres_max_results,
+                                                  expand="changelog")
+    if not tbv_list_jira:
+        logger.debug("No TBV Jira AR ...")
+
+    tbv_list = tbv_list_remedy + tbv_list_jira
+    num_tbv = len(tbv_list)
     if num_tbv != 0:
         tbvobjlist = get_ar_obj_list(tbv_list, 1)
         if "major area managers" in parammap.keys():
@@ -1675,7 +1720,7 @@ def releases_report(ar_obj_list, parammap, files_to_send):
     cas = sorted(parammap['major area managers'])
     logger.debug(cas)
     cammap = ayer.remove_map_quote(parammap['major area managers'])
-    for rel in parammap['report releases']:
+    for rel in parammap['releases for detail report']:
         #get all the ar with 'report releases' == rel
         ars = filter_release(ar_obj_list, rel)
         ar_count_map = count_by_ca_manager(ars, cas, cammap)
@@ -1683,7 +1728,7 @@ def releases_report(ar_obj_list, parammap, files_to_send):
 
         #release age report
         title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ','') +' ARs by Age'
-        color_set = COLOR_SETS[((parammap['report releases'].index(rel))+1)%len(COLOR_SETS)]
+        color_set = COLOR_SETS[((parammap['releases for detail report'].index(rel))+1)%len(COLOR_SETS)]
         save_to_png = pngprefix + '[07]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ','') + '_ARs_by_Age.png'
         total_age_report(ars, title, color_set, save_to_png)
         files_to_send["image"].append(save_to_png)
@@ -1755,7 +1800,7 @@ def releases_report(ar_obj_list, parammap, files_to_send):
             ca_ar_obj_list = ar_count_map[ca]
             if len(ca_ar_obj_list) != 0:
                 title = parammap['report name'].replace(' ', '') + ' ' + ca + ' ' + rel.replace(' ','') +' ARs by Age'
-                color_set = COLOR_SETS[((parammap['report releases'].index(rel))+1)%len(COLOR_SETS)]
+                color_set = COLOR_SETS[((parammap['releases for detail report'].index(rel))+1)%len(COLOR_SETS)]
                 save_to_png = pngprefix + '[10]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_' + ca + '_ARs_by_Age.png'
                 total_age_report(ca_ar_obj_list, title, color_set, save_to_png)
                 files_to_send["image"].append(save_to_png)
@@ -1833,10 +1878,20 @@ def init_dir():
         if not os.path.exists(dir):
             os.makedirs(dir)
 
+def create_jira_session(parammap):
+    jira_server = 'https://jira.cec.lab.emc.com:8443'
+    jira_para = {'server': jira_server, 'verify': False}
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        jira_session = JIRA(jira_para, basic_auth=(parammap['user'], parammap['pwd']))
+    return jira_session
+
 def main():
     start = time.clock()
     parammap = init_param(arg_parser()) #init parameters
     init_dir()  #make directories: data, png and log
+    global jira_session
+    jira_session = create_jira_session(parammap)
     files_to_send = {}
     files_to_send['attachment'] = []
     files_to_send["image"] = []
@@ -1845,12 +1900,13 @@ def main():
     ar_in_out_obj_dict = dict()
     bugmap = dict()
     logger.debug("="*25 + "Start" + "="*25 + "\n" + "-"*25 + "REPORT NAME: " + parammap['report name'] + "-"*25)
-    get_ars_assigned_to_manager(ar_obj_list, parammap, files_to_send)
+    get_ars_assigned_to_common_platform(ar_obj_list, parammap, files_to_send)
     ar_blocking_report(ar_obj_list, parammap, files_to_send)
     ar_total_report(ar_obj_list, bugmap, parammap, files_to_send)
     ar_total_age_report(ar_obj_list, parammap, files_to_send)
     ar_total_trend_report(bugmap, parammap, files_to_send)
     ar_direct_manager_report(ar_obj_list, parammap, files_to_send)
+    #need to do some changes for cyclone
     ar_tbv_report(parammap, files_to_send)
     #ar_radar_report.radar_report(parammap, files_to_send)
     releases_report(ar_obj_list, parammap, files_to_send)

@@ -8,6 +8,7 @@ from UtilArrayMap import *
 from UtilString import *
 from UtilTime import *
 from UtilLogging import *
+import re
 
 logger = LogHelper()
 strer = StringHelper(logger)
@@ -119,6 +120,8 @@ def generate_unity_ar_obj(platformUnityAR):
     """
     timer = TimeHelper()
     for key, value in platformUnityAR[1].iteritems():
+        #basically ar from remedy has no field days_in_status.
+        days_in_status = None
         if key == 536870921:
             entry_id = strer.str_exclude_pre_zero(value)
         elif key == 536870925:
@@ -187,11 +190,97 @@ def generate_unity_ar_obj(platformUnityAR):
             version_found = value
         elif key == 'days_in_status':
             days_in_status = value
+
     return PlatformUnityAR(entry_id,summary,assigned_to,direct_manager,reported_by,create_date,create_date_local, \
                           status,days_in_status,status_details,blocking,priority,type,estimated_checkin_date, \
                           estimated_checkin_date_local,reported_by_group,reported_by_function,product_release,\
                           product_family,product_area,major_area, release_buildin, classification, num_dup,version_found)
 
+def generate_cyclone_ar_obj(platformCycloneAR):
+    """
+    Generates platform cyclone AR object from raw database record.
+    AR Fields Map:
+
+        Entry-Id:                          string
+        Summary:                           string
+        Assigned-to Full Name:             string
+        Direct Manager:                    string
+        Reported by:                       string
+        Create-date:                       int
+        Status:                            long
+        Status Details:                    string
+        Blocking:                          long
+        Priority:                          string
+        Type:                              string
+        Estimated Checkin Date:            int
+        Reported by Group:                 string
+        Reported by Function:              string
+        Product Release:                   string
+        Product Family:                    string
+        Product Area:                      string
+        Major Area:                        string
+        Release Build-in:                  string
+        Classification                     string
+        Num of Duplicates                  int
+        Version Found                      string
+        DaysInStatus                       int
+
+
+    :param platformUnityAR: database record
+    :return:
+    """
+    timer = TimeHelper()
+    entry_id = strer.str_exclude_pre_zero(platformCycloneAR.key)
+    summary = platformCycloneAR.fields.summary
+    assigned_to = "" if platformCycloneAR.fields.assignee is None else platformCycloneAR.fields.assignee.displayName
+    reported_by = "" if platformCycloneAR.fields.reporter is None else platformCycloneAR.fields.reporter.displayName
+
+    #The format of create_date in Jira is different from that in Remedy, so need to change it from u'2017-10-06T15:35:06.000-0400' to '06/10/2017'
+    create_date_str = platformCycloneAR.fields.created#u'2017-10-06T15:35:06.000-0400'
+    create_date = timer.cyc_strtime_to_timestamp(create_date_str)
+    create_date_local = timer.mtime_to_local_date(create_date)
+    status = platformCycloneAR.fields.status.name
+    status_details = "" if platformCycloneAR.fields.customfield_11104 is None else platformCycloneAR.fields.customfield_11104.value
+    blocking = "N" if (platformCycloneAR.fields.customfield_10822 is None or platformCycloneAR.fields.customfield_10822.value == 'No') else "Y"
+    priority = "" if platformCycloneAR.fields.priority is None else platformCycloneAR.fields.priority.name
+    type = "" if platformCycloneAR.fields.issuetype is None else platformCycloneAR.fields.issuetype.name
+    product_release = "" if platformCycloneAR.fields.customfield_11101 is None else platformCycloneAR.fields.customfield_11101.name
+    if platformCycloneAR.fields.components and platformCycloneAR.fields.components[0] is not None:
+        product_area = platformCycloneAR.fields.components[0].name
+    else:
+        product_area = ""
+
+    major_area = "" if platformCycloneAR.fields.customfield_11512 is None else platformCycloneAR.fields.customfield_11512.value
+
+    if platformCycloneAR.fields.fixVersions and platformCycloneAR.fields.fixVersions[0] is not None:
+        release_buildin = platformCycloneAR.fields.fixVersions[0].name
+    else:
+        release_buildin = ""
+    days_in_status = platformCycloneAR.fields.resolutiondate
+    #need to convert num_dup from unicode str to float, then to int
+    num_dup_str = platformCycloneAR.fields.customfield_11700#unicode 0.0
+    num_dup = float(num_dup_str)
+    num_dup = int(num_dup)
+
+    #get classification from num_dup
+    if num_dup:
+        classification = "Parent"
+    else:
+        classification = "Unique"
+
+    version_found = platformCycloneAR.fields.customfield_11102
+
+    direct_manager = ""
+    estimated_checkin_date = ""#? timeestimate
+    estimated_checkin_date_local = ""
+    reported_by_group = ""
+    reported_by_function = ""
+    product_family = ""
+
+    return PlatformUnityAR(entry_id,summary,assigned_to,direct_manager,reported_by,create_date,create_date_local, \
+                          status,days_in_status,status_details,blocking,priority,type,estimated_checkin_date, \
+                          estimated_checkin_date_local,reported_by_group,reported_by_function,product_release,\
+                          product_family,product_area,major_area, release_buildin, classification, num_dup,version_found)
 
 def filter_release(ar_obj_list, product_releases):
     """
