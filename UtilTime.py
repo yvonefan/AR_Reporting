@@ -4,6 +4,7 @@
 # Author: Youye Sun
 # Version: 1.0 04/20/2015
 import time, datetime
+import re
 
 class TimeHelper:
     def __init__(self,log=None):
@@ -12,7 +13,7 @@ class TimeHelper:
     def get_mtime(self):
         """
         Gets the machine time
-        :return: machine time in ms
+        :return: machine time in s
         """
         return time.time()
 
@@ -131,3 +132,41 @@ class TimeHelper:
         dat = time.strptime(dstr,'%m/%d/%Y')
         dat = datetime.date(dat.tm_year,dat.tm_mon,dat.tm_mday)
         return dat
+
+    def strtime_to_datetime(self, strtime):
+        '''
+        Change strtime like '2016-02-25 20:21:04.242' to datetime like 2016-02-25 20:21:04.242000.
+        :param strtime:
+        :return:local_datetime
+        '''
+        local_datetime = datetime.datetime.strptime(strtime, "%Y-%m-%d %H:%M:%S.%f")
+        return local_datetime
+
+    def datetime_to_timestamp(self, datetime_obj):
+        '''
+        Change datetime like 2016-02-25 20:21:04.242000 to timestamp like 1456402864
+        :param datetime_obj:
+        :return: local_timestamp: unit is s
+        '''
+        local_timestamp = long(time.mktime(datetime_obj.timetuple()) + datetime_obj.microsecond / 1000.0 / 1000.0)
+        return local_timestamp
+
+    def cyc_strtime_to_timestamp(self, strtime):
+        '''
+        Change strtime like '2017-10-06T15:35:06.000-0400' to timestamp like 1234567.
+        :param strtime:
+        :return: create_date:unit is s
+        '''
+        # create_date_str = platformCycloneAR.fields.created  # u'2017-10-06T15:35:06.000-0400'
+        match = re.search(r'(\d+)-(\d+)-(\d+)T(\d+):(\d+):(\d+).(\d+)-(\d+)', strtime)
+        strtime = match.group(1) + '-' + match.group(2) + '-' + match.group(3) + ' ' + match.group(
+            4) + ':' + match.group(5) + ':' + match.group(6) + '.' + match.group(7)
+        # strtime_to_datetime
+        # local_datetime = datetime.strptime(create_date_str, "%Y-%m-%d %H:%M:%S.%f")
+        local_datetime = self.strtime_to_datetime(strtime)
+
+        # datetime_to_timestamp
+        # local_timestamp = long(time.mktime(local_datetime.timetuple()) * 1000.0 + local_datetime.microsecond / 1000.0)
+        # create_date = local_timestamp / 1000.0  # unit is s
+        create_date = self.datetime_to_timestamp(local_datetime)
+        return create_date
