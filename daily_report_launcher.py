@@ -11,7 +11,7 @@ JsonFile = 'platform_config.json'
 cmd_log = fpath + '\\log\\' + 'cmd.log'
 
 #cmd = Python + ' ' + "ar_report_daily.py" + ' ' + '-config' + ' ' + JsonFile + ' ' + '-t' + ' 2>' + cmd_log
-cmd = Python + ' ' + "ar_report_daily.py" + ' ' + '-config' + ' ' + JsonFile + ' 2>' + cmd_log
+cmd = Python + ' ' + "ar_report_daily.py" + ' -u fanw4 -p ImiSDo08189' + ' -config' + ' ' + JsonFile + ' 2>' + cmd_log
 os.chdir(fpath)
 
 num = 0
