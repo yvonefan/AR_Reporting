@@ -190,7 +190,6 @@ def count_bug_total(arObjList, twodkeyset):
     res = {}
     arrayer = ArrayMapHelper(logger)
     for obj in arObjList:
-        #print obj.product_release
         arrayer.update_twod_map_values(res, obj.product_release, obj.priority, twodkeyset, iftotal=True)
         #if (obj.product_family == "Unified Systems") or (obj.product_family == "Bearcat"):
             #arrayer.update_twod_map_values(res,obj.product_release,obj.priority,twodkeyset, iftotal=True)
@@ -1507,7 +1506,7 @@ def get_ars_assigned_in_Remedy(ar_obj_list, parammap):
 
 def get_ars_assigned_in_Jira(ar_obj_list, parammap):
     logger.debug("[get_ars assigned to common platform team in Jira]......")
-    mres_query_string = 'project = MDT AND "MRES Product" = Cyclone AND Release = Smuttynose AND issuetype = Bug AND status in (Open, "In Progress", Reopened, WOO) AND issueFunction not in hasLinks("duplicates(childof)") AND "Major Area" in ("IO Modules and Backend", "Storage Processor") AND priority in (P00,P01,P02) ORDER BY created DESC'
+    mres_query_string = 'project = MDT AND "MRES Product" = Cyclone AND Release = Smuttynose AND issuetype = Bug AND status in (Open, "In Progress", Reopened, WOO) AND issueFunction not in hasLinks("duplicates(childof)") AND "Major Area" in ("IO Modules and Backend", "Storage Processor") AND priority in (P00,P01,P02,P03) ORDER BY created DESC'
     mres_max_results = 200
     global jira_session
     mres_open_issues = jira_session.search_issues(mres_query_string, startAt=0, maxResults=mres_max_results, expand="changelog")
