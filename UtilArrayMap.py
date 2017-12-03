@@ -93,9 +93,13 @@ class ArrayMapHelper:
         :return:
         """
 
+        # only process ar with priority in twodkeyset
+        if twodkey not in twodkeyset:
+            return;
         if onedkey in mmap.keys():
             if(iftotal):
                 mmap[onedkey]['Total'] += 1
+
             mmap[onedkey][twodkey] += 1
         else:
             mmap[onedkey]={}
