@@ -209,13 +209,13 @@ def bug_total_report(arObjList, parammap, title, save_to_file):
     grapher = GraphHelper()
     arrayer = ArrayMapHelper(logger)
 
-    bug_count_map = count_bug_total(arObjList, ['P00','P01','P02', 'P03', 'Total'])
+    bug_count_map = count_bug_total(arObjList, ['P00','P01','P02','Total'])
     logger.debug("bug_count_map :" + str(bug_count_map))
 
     #product count map(data type: dictionary)
     map_product = {}
     for key in bug_count_map.keys():
-        map_product[key] = arrayer.positive_map_filter(bug_count_map[key], ['P00','P01','P02', 'P03', 'Total'])
+        map_product[key] = arrayer.positive_map_filter(bug_count_map[key], ['P00','P01','P02','Total'])
 
     #product count table(data type: list)
     #1. Convert data from dict to list
@@ -273,7 +273,7 @@ def count_bug_age(ar_obj_list):
     current_time = timer.get_day_start(timer.get_mtime())
     one_week = 7*24*60*60
     oned_key_set =['0-1 week','1-2 week','2-3 week','3-4 week','4-5 week','5-6 week','>=6 week']
-    twod_key_set = ['P00','P01','P02','P03']
+    twod_key_set = ['P00','P01','P02']
     for obj in ar_obj_list:
         if ('MDT' not in obj.entry_id ) and (obj.product_family != 'Unified Systems') and (obj.product_family != 'Bearcat'):
             continue
@@ -1449,7 +1449,7 @@ def sent_report_email(parammap, files_to_send, bug_releases, additional_body):
     if len(notice) is not 0:
         notice = '<p style="color:red">' + notice[:-2]
         notice = notice + ' have no AR.\n<p>'
-        notice = notice + '<p style="color:red">Get P00~P03 ARs for Smuttynose, get P00~P02 ARs for other releases.<p>'
+        # notice = notice + '<p style="color:red">Get P00~P03 ARs for Smuttynose, get P00~P02 ARs for other releases.<p>'
     #notice = '<p style="color:red"> Resent to more people..</p>' + notice
     body = body + notice
     style = '<style>table,th,td{border: 1px solid black;border-collapse: collapse;font-family:"Arial";'+\
@@ -1507,7 +1507,7 @@ def get_ars_assigned_in_Remedy(ar_obj_list, parammap):
 
 def get_ars_assigned_in_Jira(ar_obj_list, parammap):
     logger.debug("[get_ars assigned to common platform team in Jira]......")
-    mres_query_string = 'project = MDT AND "MRES Product" = Cyclone AND Release = Smuttynose AND issuetype = Bug AND status in (Open, "In Progress", Reopened, WOO) AND issueFunction not in hasLinks("duplicates(childof)") AND "Major Area" in ("IO Modules and Backend", "Storage Processor") AND priority in (P00,P01,P02,P03) ORDER BY created DESC'
+    mres_query_string = 'project = MDT AND "MRES Product" = Cyclone AND Release = Smuttynose AND issuetype = Bug AND status in (Open, "In Progress", Reopened, WOO) AND issueFunction not in hasLinks("duplicates(childof)") AND "Major Area" in ("IO Modules and Backend", "Storage Processor") AND priority in (P00,P01,P02) ORDER BY created DESC'
     mres_max_results = 200
     global jira_session
     mres_open_issues = jira_session.search_issues(mres_query_string, startAt=0, maxResults=mres_max_results, expand="changelog")
@@ -1692,7 +1692,7 @@ def ar_tbv_report(parammap, files_to_send):
 
     tbv_list_jira = []
     logger.debug("[get TBV ars of common platform team in Jira]......")
-    mres_query_string = 'project = MDT AND "MRES Product" = Cyclone AND Release = Smuttynose AND issuetype = Bug AND status in (Resolved) AND issueFunction not in hasLinks("duplicates(childof)") AND "Major Area" in ("IO Modules and Backend", "Storage Processor") AND priority in (P00,P01,P02,P03) ORDER BY created DESC'
+    mres_query_string = 'project = MDT AND "MRES Product" = Cyclone AND Release = Smuttynose AND issuetype = Bug AND status in (Resolved) AND issueFunction not in hasLinks("duplicates(childof)") AND "Major Area" in ("IO Modules and Backend", "Storage Processor") AND priority in (P00,P01,P02) ORDER BY created DESC'
     mres_max_results = 200
     global jira_session
     tbv_list_jira = jira_session.search_issues(mres_query_string, startAt=0, maxResults=mres_max_results,
