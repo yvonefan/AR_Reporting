@@ -131,7 +131,7 @@ class DatabaseHelper:
         schema = 'EMC:Issue Assigned-to Manager Join'
         '''
         query = """
-                ('Product Family' = "Unified Systems") AND ('Senior Manager' = "Sam, Yan")
+                ('Product Family' = "Unified Systems") AND ('Senior Manager' = "Yan, Sam")
                 AND  ('Status' =  "Open" OR 'Status'  =  "Waiting on Originator")
                 AND 'Parent Bug #' = $NULL$  AND 'Type' =  "Bug" AND 'Priority' <  "P03"
                 AND 'Product Release' = "Merlin"
