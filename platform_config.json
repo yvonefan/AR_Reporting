@@ -1,7 +1,7 @@
 {
   "report name":"Common Platform",
   "assinged to manager param map":{
-     "Senior Manager" : [ "\"Pu, John\""],
+     "Senior Manager" : [ "\"Yan, Sam\""],
      "Status" : ["\"Open\"","\"Waiting on Originator\"","\"In-progress\""],
      "Type":["\"Bug\""],
      "Parent Bug #": ["\"$NULL$\""],
@@ -18,7 +18,7 @@
                         "\"Osprey\""]
   },
   "reported by manager param map":{
-     "Senior Manager" : [ "\"Pu, John\""],
+     "Senior Manager" : [ "\"Yan, Sam\""],
      "Status" : ["\"Fixed\""],
      "Status Details":["\"Test-ready\""],
      "Type":["\"Bug\""],
