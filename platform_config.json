@@ -73,7 +73,7 @@
   "major area managers":{
       "Platform Core":["\"Ramadurai, Balaji\"","\"Hanna, Bill\"","\"Jayanty, Ramanamurthy\"","\"Jones, Greg\"", "\"Zhang, Haohan\"","\"Li, Leon\""],
       "SLICs Protocols and Backend":["\"Dobkowski, Konrad\"","\"Askarzadeh, Fardad\"","\"Manning, Mike\"","\"Breton, Peter\"","\"Karner, Joe\"",
-                                     "\"Liu, Andy(Yang)\"","\"Wang, Eric X\"","\"Chang, Rui\""],
+                                     "\"Liu, Andy(Yang)\"","\"Wang, Eric X\"","\"Tang, Guifeng\"","\"Chang, Rui\""],
       "Platform Services":["\"Tang, Guifeng\""]
   },
   "releases for detail report":["Nighthawk", "Harrier", "Harrier SP1"],
@@ -82,7 +82,7 @@
                               "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                               "\"Bearcat\"","\"Bearcat SP1\"",
                               "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
-                              "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\""],
+                              "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Smuttynose\"", "\"Condor\""],
   "to":"John.Pu@emc.com;Balaji.Ramadurai@emc.com;konrad.dobkowski@emc.com;sam.yan@emc.com;Dynesy.Yuan@emc.com;Eric.X.Wang@emc.com",
   "cc":"Leon.Li@emc.com",
   "bcc":"Winnie.Fan@emc.com"
