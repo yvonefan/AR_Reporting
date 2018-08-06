@@ -6,16 +6,14 @@
      "Type":["\"Bug\""],
      "Parent Bug #": ["\"$NULL$\""],
      "Priority":["\"P00\"","\"P01\"","\"P02\""],
-     "Product Family": ["\"Unified Systems\"", "\"NGM\""],
+     "Product Family": ["\"Unified Systems\""],
      "No Product Family" : ["\"USD Test\"", "\"CTD SSIE\""],
      "Product Release":["\"Merlin\"", "\"Merlin SP1\"", "\"Merlin SP2\"", "\"Harrier\"", "\"Harrier SP1\"",
                         "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                         "\"Bearcat\"","\"Bearcat SP1\"",
                         "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
-                        "\"Unity 4.x\"",
-                        "\"Nighthawk\"",
-                        "\"Osprey\""]
+                        "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\""]
   },
   "reported by manager param map":{
      "Senior Manager" : [ "\"Yan, Sam\""],
@@ -24,38 +22,36 @@
      "Type":["\"Bug\""],
      "Parent Bug #": ["\"$NULL$\""],
      "Priority":["\"P00\"","\"P01\"","\"P02\""],
-     "Product Family": ["\"Unified Systems\"", "\"NGM\""],
+     "Product Family": ["\"Unified Systems\""],
      "No Product Family" : ["\"USD Test\"", "\"CTD SSIE\""],
      "Product Release":["\"Merlin\"", "\"Merlin SP1\"", "\"Merlin SP2\"", "\"Harrier\"", "\"Harrier SP1\"",
                         "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                         "\"Bearcat\"","\"Bearcat SP1\"",
                         "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
-                        "\"Unity 4.x\"",
-                        "\"Nighthawk\"",
-                        "\"Osprey\""]
+                        "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\""]
   },
   "audit trail param map":{
       "Attribute Label":["\"Product Area\""],
       "Type":["\"Bug\""],
       "Priority":["\"P00\"","\"P01\"","\"P02\""],
-      "Product Family": ["\"Unified Systems\"", "\"NGM\""],
+      "Product Family": ["\"Unified Systems\""],
       "No Product Family" : ["\"USD Test\"", "\"CTD SSIE\""],
       "Product Release":["\"Merlin\"", "\"Merlin SP1\"", "\"Merlin SP2\"", "\"Harrier\"", "\"Harrier SP1\"",
                         "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                         "\"Bearcat\"","\"Bearcat SP1\"",
                         "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
-                        "\"Unity 4.x\"",
-                        "\"Nighthawk\"",
-                        "\"Osprey\""],
+                        "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\""],
       "Specific Product Release":["\"Nighthawk\"", "\"Harrier\"", "\"Harrier SP1\""],
       "Get AR from the begining of this year": 0
   },
   "platform domain":{
       "Platform Core":["\"Platform Core\""],
       "SLICs Protocols and Backend":["\"Back End Protocols\"","\"Block Front End Protocols\"","\"Host access\"",
-                                      "\"Platform Integration\"","\"SLIC Management\""]
+                                    "\"Platform Integration\"","\"SLIC Management\"","\"Network\"",
+                                    "\"Hostside\"","\"IoRedirector\""],
+      "Platform Services":["\"Platform Services\""]
   },
   "platform product areas":{
       "product area names":["\"Environmental Services - FBE\"","\"Environmental Services - GUI, CLI, REST\"",
@@ -77,7 +73,8 @@
   "major area managers":{
       "Platform Core":["\"Ramadurai, Balaji\"","\"Hanna, Bill\"","\"Jayanty, Ramanamurthy\"","\"Jones, Greg\"", "\"Zhang, Haohan\"","\"Li, Leon\""],
       "SLICs Protocols and Backend":["\"Dobkowski, Konrad\"","\"Askarzadeh, Fardad\"","\"Manning, Mike\"","\"Breton, Peter\"","\"Karner, Joe\"",
-                                     "\"Liu, Andy(Yang)\"","\"Wang, Eric X\"","\"Tang, Guifeng\"","\"Chang, Rui\""]
+                                     "\"Liu, Andy(Yang)\"","\"Wang, Eric X\"","\"Chang, Rui\""],
+      "Platform Services":["\"Tang, Guifeng\""]
   },
   "releases for detail report":["Nighthawk", "Harrier", "Harrier SP1"],
   "releases for total report":["\"Merlin\"", "\"Merlin SP1\"", "\"Merlin SP2\"", "\"Harrier\"", "\"Harrier SP1\"",
@@ -85,10 +82,7 @@
                               "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                               "\"Bearcat\"","\"Bearcat SP1\"",
                               "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
-                              "\"Unity 4.x\"",
-                              "\"Nighthawk\"",
-                              "\"Smuttynose\"",
-                              "\"Osprey\""],
+                              "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\""],
   "to":"John.Pu@emc.com;Balaji.Ramadurai@emc.com;konrad.dobkowski@emc.com;vicky.guo@emc.com;sam.yan@emc.com;Dynesy.Yuan@emc.com;Eric.X.Wang@emc.com",
   "cc":"Leon.Li@emc.com",
   "bcc":"Winnie.Fan@emc.com"

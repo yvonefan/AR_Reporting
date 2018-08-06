@@ -1507,7 +1507,7 @@ def get_ars_assigned_in_Remedy(ar_obj_list, parammap):
 
 def get_ars_assigned_in_Jira(ar_obj_list, parammap):
     logger.debug("[get_ars assigned to common platform team in Jira]......")
-    mres_query_string = 'project = MDT AND "MRES Product" = Cyclone AND Release = Smuttynose AND issuetype = Bug AND status in (Open, "In Progress", Reopened, WOO) AND issueFunction not in hasLinks("duplicates(childof)") AND "Major Area" in ("IO Modules and Backend", "Storage Processor") AND priority in (P00,P01,P02) ORDER BY created DESC'
+    mres_query_string = 'project = MDT AND "MRES Product" = Cyclone AND Release = Smuttynose AND issuetype = Bug AND status in (Open, "In Progress", Reopened, WOO) AND issueFunction not in hasLinks("duplicates(childof)") AND "Major Area" = Platform  AND component in ("Platform Test and Tools",Backend,"IO Modules and Backend Hardware","FC IO Modules","iSCSI IO Modules",NVMe,SAS,"SP Firmware","SP Hardware","SP Software") AND priority in (P00,P01,P02) ORDER BY created DESC'
     mres_max_results = 200
     global jira_session
     mres_open_issues = jira_session.search_issues(mres_query_string, startAt=0, maxResults=mres_max_results, expand="changelog")
@@ -1692,7 +1692,7 @@ def ar_tbv_report(parammap, files_to_send):
 
     tbv_list_jira = []
     logger.debug("[get TBV ars of common platform team in Jira]......")
-    mres_query_string = 'project = MDT AND "MRES Product" = Cyclone AND Release = Smuttynose AND issuetype = Bug AND status in (Resolved) AND issueFunction not in hasLinks("duplicates(childof)") AND "Major Area" in ("IO Modules and Backend", "Storage Processor") AND priority in (P00,P01,P02) ORDER BY created DESC'
+    mres_query_string = 'project = MDT AND "MRES Product" = Cyclone AND Release = Smuttynose AND issuetype = Bug AND status in (Resolved) AND issueFunction not in hasLinks("duplicates(childof)") AND "Major Area" = Platform  AND component in ("Platform Test and Tools",Backend,"IO Modules and Backend Hardware","FC IO Modules","iSCSI IO Modules",NVMe,SAS,"SP Firmware","SP Hardware","SP Software") AND priority in (P00,P01,P02) ORDER BY created DESC'
     mres_max_results = 200
     global jira_session
     tbv_list_jira = jira_session.search_issues(mres_query_string, startAt=0, maxResults=mres_max_results,
