@@ -1866,7 +1866,7 @@ def ar_blocking_report(ar_obj_list, parammap, files_to_send):
         additional_body, blocking_text = convert_AR_objs_to_html_table(blocking_ar_list, 'blockings')
         #just truncate the member of blocking_text
         blocking_text = refine_twod_array(blocking_text)
-        title = parammap['report name'].replace(' ', '')+' Blocking ARs'
+        title = parammap['report name'].replace(' ', '')+' Blocking or P00 ARs'
         plt, table = grapher.draw_table_first_row_colored(blocking_text, 1*len(blocking_text[0]), 0.5*len(blocking_text), 0.98, True, title, 'center', 10)
         save_to_png = pngprefix + '[00]' + parammap['report name'].replace(' ', '') + '_ARs_Blocking.png'
         plt.savefig(save_to_png, bbox_inches='tight')

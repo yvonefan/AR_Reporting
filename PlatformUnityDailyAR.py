@@ -343,6 +343,6 @@ def get_blocking_AR(ar_obj_list):
     """
     res = []
     for obj in ar_obj_list:
-        if obj.blocking == 'Y':
+        if obj.blocking == 'Y' or obj.priority == 'P00':
             res.append(obj)
     return sorted(res)
