@@ -13,7 +13,7 @@
                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                         "\"Bearcat\"","\"Bearcat SP1\"",
                         "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
-                        "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\"", "\"GoShawk\""]
+                        "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\"", "\"Goshawk\""]
   },
   "reported by manager param map":{
      "Senior Manager" : [ "\"Yan, Sam\""],
@@ -29,7 +29,7 @@
                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                         "\"Bearcat\"","\"Bearcat SP1\"",
                         "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
-                        "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\"", "\"GoShawk\""]
+                        "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\"", "\"Goshawk\""]
   },
   "audit trail param map":{
       "Attribute Label":["\"Product Area\""],
@@ -42,7 +42,7 @@
                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                         "\"Bearcat\"","\"Bearcat SP1\"",
                         "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
-                        "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\"", "\"GoShawk\""],
+                        "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\"", "\"Goshawk\""],
       "Specific Product Release":["\"Nighthawk\"", "\"Unity 4.x\"", "\"Condor\""],
       "Get AR from the begining of this year": 0
   },
@@ -82,7 +82,7 @@
                               "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                               "\"Bearcat\"","\"Bearcat SP1\"",
                               "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
-                              "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Smuttynose\"", "\"Condor\"", "\"GoShawk\""],
+                              "\"Unity 4.x\"", "\"Nighthawk\"", "\"Osprey\"", "\"Smuttynose\"", "\"Condor\"", "\"Goshawk\""],
   "to":"John.Pu@emc.com;Balaji.Ramadurai@emc.com;konrad.dobkowski@emc.com;sam.yan@emc.com;Dynesy.Yuan@emc.com;Tianxin.Shao@emc.com;Leon.Li@emc.com",
   "cc":"Eric.X.Wang@emc.com",
   "bcc":"Winnie.Fan@emc.com"

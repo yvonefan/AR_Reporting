@@ -23,7 +23,8 @@ class DatabaseHelper:
         try:
             #TODO:
             # handler.Login('arsystem.isus.emc.com', 'dimsreport', 'report')
-            handler.Login('arsappprd01.isus.emc.com', 'dimsreport', 'report')
+            # handler.Login('arsappprd01.isus.emc.com', 'dimsreport', 'report')
+            handler.Login('arsappprd02.isus.emc.com', 'dimsreport', 'report')
             self.logger.debug("log in RemedyAR successfully ...") if self.logger else "No"
         except Exception, e:
             self.logger.debug(e) if self.logger else "No"
