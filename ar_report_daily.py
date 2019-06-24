@@ -1441,7 +1441,7 @@ def sent_report_email(parammap, files_to_send, bug_releases, additional_body):
     if len(additional_body) != 0:
         body += '<p><a href="#blockings">Check The Details Of Blocking ARs<a/></p>'
     notice = ''
-    #entries = get_file_enteries(dataprefix + '[31]' + parammap['report name'].replace(' ', '') + "_ARs_Product.csv")
+    #entries = get_file_enteries(dataprefix + '[31]' + parammap['report name'].replace(' ','').replace('/','_') + "_ARs_Product.csv")
     entries = [rel.replace('"', '') for rel in parammap['assinged to manager param map']['Product Release']]
     for key in entries:
         if key not in bug_releases:
@@ -1531,8 +1531,8 @@ def get_ars_assigned_to_common_platform(ar_obj_list, parammap, files_to_send):
 
 def ar_total_report(ar_obj_list, bugmap, parammap, files_to_send):
     logger.debug("-"*40 + "[ar_total_report]" + "-"*40)
-    save_to_png = pngprefix + '[01]' + parammap['report name'].replace(' ', '') + '_ARs_Total.png'
-    title = parammap['report name'].replace(' ', '') + ' Total ARs'
+    save_to_png = pngprefix + '[01]' + parammap['report name'].replace(' ','').replace('/','_') + '_ARs_Total.png'
+    title = parammap['report name'].replace(' ','').replace('/','_') + ' Total ARs'
     bug_count_map = bug_total_report(ar_obj_list, parammap, title, save_to_png)
     bugmap.update(bug_count_map)
     logger.debug("bugmap : "+str(bugmap))
@@ -1548,8 +1548,8 @@ def ar_total_report(ar_obj_list, bugmap, parammap, files_to_send):
 #     #append out_map to in_map
 #     in_map.update(out_map)
 #
-#     record_file = dataprefix + '[21]' + parammap["report name"].replace(' ', '') + '_ARs_Total_In_Out.csv'
-#     trend_record_file = dataprefix + '[22]' + parammap["report name"].replace(' ', '') + '_ARs_Total_In_Out_Trend.csv'
+#     record_file = dataprefix + '[21]' + parammap["report name"].replace(' ','').replace('/','_') + '_ARs_Total_In_Out.csv'
+#     trend_record_file = dataprefix + '[22]' + parammap["report name"].replace(' ','').replace('/','_') + '_ARs_Total_In_Out_Trend.csv'
 #     entries = sorted([ca+' In' for ca in parammap["major area managers"]] + [ca+' Out' for ca in parammap["major area managers"]])
 #     #logger.debug('entries : '+str(entries))
 #
@@ -1558,9 +1558,9 @@ def ar_total_report(ar_obj_list, bugmap, parammap, files_to_send):
 #
 #     #draw total ar in/out trend chart
 #     date_x_unit = calc_date_x_unit(ar_records_cnt)
-#     title = parammap['report name'].replace(' ', '') + ' Total ARs In/Out Trend'
+#     title = parammap['report name'].replace(' ','').replace('/','_') + ' Total ARs In/Out Trend'
 #     lines = ['Total In', 'Total Out']
-#     save_to_png = pngprefix + '[02]' + parammap["report name"].replace(' ', '') + '_ARs_Total_In_Out_Trend.png'
+#     save_to_png = pngprefix + '[02]' + parammap["report name"].replace(' ','').replace('/','_') + '_ARs_Total_In_Out_Trend.png'
 #     grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 5, date_x_unit, save_to_png)
 #     files_to_send["image"].append(save_to_png)
 
@@ -1588,13 +1588,13 @@ def update_weekly_in_out_record_file(parammap, ar_date_cnt_dict, file):
     header = 'Date' + ',' + 'Total_In'
     for rls in parammap["audit trail param map"]["Specific Product Release"]:
         rls = rls.replace('"', '')
-        header += ',' + rls + '_In'
+        header += ',' + rls.replace('/','_') + '_In'
 
     header += ',' + 'Total_Out'
 
     for rls in parammap["audit trail param map"]["Specific Product Release"]:
         rls = rls.replace('"', '')
-        header += ',' + rls + '_Out'
+        header += ',' + rls.replace('/','_') + '_Out'
 
     header += '\n'
 
@@ -1618,9 +1618,9 @@ def draw_weekly_total_inout_trend_chart(parammap, record_file, files_to_send):
     :return:
     """
 
-    title = parammap['report name'].replace(' ', '') + ' ARs Total Weekly In/Out Trend'
+    title = parammap['report name'].replace(' ','').replace('/','_') + ' ARs Total Weekly In/Out Trend'
     lines = ['Total_In', 'Total_Out']
-    save_to_png = pngprefix + '[11]' + parammap["report name"].replace(' ', '') + '_ARs_Total_Weekly_In_Out_Trend.png'
+    save_to_png = pngprefix + '[11]' + parammap["report name"].replace(' ','').replace('/','_') + '_ARs_Total_Weekly_In_Out_Trend.png'
     grapher.draw_trent_chart(record_file, lines, title, 14, 4, 5, save_to_png)
     files_to_send["image"].append(save_to_png)
 
@@ -1635,9 +1635,9 @@ def draw_weekly_release_inout_trend_chart(parammap, record_file, files_to_send):
 
     for rls in parammap["audit trail param map"]["Specific Product Release"]:
         rls = rls.replace('"', '')
-        title = parammap['report name'].replace(' ', '') + ' ARs ' + rls + ' Weekly In/Out Trend'
+        title = parammap['report name'].replace(' ','').replace('/','_') + ' ARs ' + rls.replace('/','_') + ' Weekly In/Out Trend'
         lines = [rls + '_In', rls + '_Out']
-        save_to_png = pngprefix + '[12]' + parammap["report name"].replace(' ', '') + '_ARs_' + rls + '_Weekly_In_Out_Trend.png'
+        save_to_png = pngprefix + '[12]' + parammap["report name"].replace(' ','').replace('/','_') + '_ARs_' + rls.replace('/','_') + '_Weekly_In_Out_Trend.png'
         grapher.draw_trent_chart(record_file, lines, title, 14, 4, 5, save_to_png)
         files_to_send["image"].append(save_to_png)
 
@@ -1650,7 +1650,7 @@ def ar_total_weekly_in_out_trend_report(parammap, files_to_send):
     """
     logger.debug("-"*40 + "[ar_total_weekly_in_out_trend_report]" + "-"*40)
     hist_needed = parammap["audit trail param map"]["Get AR from the begining of this year"]
-    record_file = data_csvprefix + '[11]' + parammap["report name"].replace(' ', '') + '_ARs_Total_Weekly_In_Out_Trend.csv'
+    record_file = data_csvprefix + '[11]' + parammap["report name"].replace(' ','').replace('/','_') + '_ARs_Total_Weekly_In_Out_Trend.csv'
     get_ar_total_weekly_in_out(parammap, record_file, hist_needed)
 
     if os.path.exists(record_file):
@@ -1659,8 +1659,8 @@ def ar_total_weekly_in_out_trend_report(parammap, files_to_send):
 
 def ar_total_age_report(ar_obj_list, parammap, files_to_send):
     logger.debug("-"*40 + "[ar_total_age_report]" + "-"*40)
-    save_to_png = pngprefix + '[03]' + parammap["report name"].replace(' ', '') + '_AR_Total_Age.png'
-    title = parammap["report name"].replace(' ', '') + ' Total ARs by Age'
+    save_to_png = pngprefix + '[03]' + parammap["report name"].replace(' ','').replace('/','_') + '_AR_Total_Age.png'
+    title = parammap["report name"].replace(' ','').replace('/','_') + ' Total ARs by Age'
     total_age_report(ar_obj_list, title, COLOR_SETS[0], save_to_png)
     files_to_send["image"].append(save_to_png)
     #sharepoint_images.append(bug_age_table)
@@ -1668,21 +1668,21 @@ def ar_total_age_report(ar_obj_list, parammap, files_to_send):
 def ar_total_trend_report(bugmap, parammap, files_to_send):
     logger.debug("-"*40 + "[ar_total_trend_report]" + "-"*40)
     summary_releases = sorted(parammap['releases for total report'])
-    record_file = data_csvprefix + '[01]' + parammap['report name'].replace(' ', '') + "_ARs_Total.csv"
-    trend_record_file = data_csvprefix + '[04]' + parammap['report name'].replace(' ', '') + "_ARs_Total_Trend.csv"
+    record_file = data_csvprefix + '[01]' + parammap['report name'].replace(' ','').replace('/','_') + "_ARs_Total.csv"
+    trend_record_file = data_csvprefix + '[04]' + parammap['report name'].replace(' ','').replace('/','_') + "_ARs_Total_Trend.csv"
     update_AR_summary_history_file(bugmap, summary_releases, record_file)
     ar_records_cnt = generate_AR_trends_report_data_file(365, record_file, trend_record_file)
 
-    title = parammap['report name'].replace(' ', '') + ' Total ARs Trend'
+    title = parammap['report name'].replace(' ','').replace('/','_') + ' Total ARs Trend'
     lines = ['Total']
-    save_to_png = pngprefix + '[04]' + parammap['report name'].replace(' ', '') + '_ARs_Total_Trend.png'
+    save_to_png = pngprefix + '[04]' + parammap['report name'].replace(' ','').replace('/','_') + '_ARs_Total_Trend.png'
     grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 5, save_to_png)
     files_to_send["image"].append(save_to_png)
 
 def ar_direct_manager_report(ar_obj_list, parammap, files_to_send):
     logger.debug("-"*40 + "[ar_direct_manager_report]" +"-"*40)
-    title = parammap['report name'].replace(' ', '') + ' Total ARs for Direct Manager'
-    save_to_png = pngprefix + '[05]' + parammap["report name"].replace(' ', '') + '_ARs_DirectManager.png'
+    title = parammap['report name'].replace(' ','').replace('/','_') + ' Total ARs for Direct Manager'
+    save_to_png = pngprefix + '[05]' + parammap["report name"].replace(' ','').replace('/','_') + '_ARs_DirectManager.png'
     direct_manager_report(ar_obj_list, title , save_to_png)
     files_to_send["image"].append(save_to_png)
 
@@ -1706,11 +1706,11 @@ def ar_tbv_report(parammap, files_to_send):
         tbvobjlist = get_ar_obj_list(tbv_list, 1)
         if "major area managers" in parammap.keys():
             add_assigned_to_ca(tbvobjlist, parammap["major area managers"])
-        save_to_excel = data_daily_openar_prefix + parammap['report name'].replace(' ', '') + '_ARs_TBV_List.xls'
+        save_to_excel = data_daily_openar_prefix + parammap['report name'].replace(' ','').replace('/','_') + '_ARs_TBV_List.xls'
         save_AR_list_to_excel(tbvobjlist, save_to_excel, 1)
         files_to_send['attachment'].append(save_to_excel)
-        title = parammap['report name'].replace(' ', '') + ' Total TBV ARs for Direct Manager'
-        save_to_png = pngprefix + '[06]' + parammap['report name'].replace(' ', '') + '_ARs_TBV_DirectManager.png'
+        title = parammap['report name'].replace(' ','').replace('/','_') + ' Total TBV ARs for Direct Manager'
+        save_to_png = pngprefix + '[06]' + parammap['report name'].replace(' ','').replace('/','_') + '_ARs_TBV_DirectManager.png'
         direct_manager_report(tbvobjlist, title, save_to_png)
         files_to_send["image"].append(save_to_png)
 
@@ -1727,9 +1727,9 @@ def releases_report(ar_obj_list, parammap, files_to_send):
         logger.debug('ar_count_map is :'+str(ar_count_map))
 
         #release age report
-        title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ','') +' ARs by Age'
+        title = parammap['report name'].replace(' ','').replace('/','_') + ' ' + rel.replace(' ','').replace('/','_') +' ARs by Age'
         color_set = COLOR_SETS[((parammap['releases for detail report'].index(rel))+1)%len(COLOR_SETS)]
-        save_to_png = pngprefix + '[07]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ','') + '_ARs_by_Age.png'
+        save_to_png = pngprefix + '[07]' + parammap['report name'].replace(' ','').replace('/','_') + '_' + rel.replace(' ','').replace('/','_') + '_ARs_by_Age.png'
         total_age_report(ars, title, color_set, save_to_png)
         files_to_send["image"].append(save_to_png)
 
@@ -1745,8 +1745,8 @@ def releases_report(ar_obj_list, parammap, files_to_send):
             csvstr = csvstr + ',' + str(len(ar_count_map[ca]))
         header = header + ',CA Total,Domain Total' + '\n'
         csvstr = csvstr + ',' + str(ca_total) + ',' + str(domain_total) + '\n'
-        ca_record_file = data_csvprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total.csv'
-        trend_ca_record_file = data_csvprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total_Trend.csv'
+        ca_record_file = data_csvprefix + '[08]' + parammap['report name'].replace(' ','').replace('/','_') + '_' + rel.replace(' ','').replace('/','_') +  '_Total.csv'
+        trend_ca_record_file = data_csvprefix + '[08]' + parammap['report name'].replace(' ','').replace('/','_') + '_' + rel.replace(' ','').replace('/','_') +  '_Total_Trend.csv'
         update_last_record(ca_record_file, timestamp, csvstr, header)
         ar_records_cnt = generate_AR_trends_report_data_file(365, ca_record_file, trend_ca_record_file)
 
@@ -1767,13 +1767,13 @@ def releases_report(ar_obj_list, parammap, files_to_send):
             csvstr = csvstr + ',' + str(bug_age_map[week_duration]['Total'])
         header = header + ',Total,>1 week,>2 days' + '\n'
         csvstr = csvstr + ',' + str(num_total) + ',' + str(num_older_than_one_week) + ',' + str(num_older_than_twos_days) + '\n'
-        age_record_file = data_csvprefix + '[07]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total_Age.csv'
+        age_record_file = data_csvprefix + '[07]' + parammap['report name'].replace(' ','').replace('/','_') + '_' + rel.replace(' ','').replace('/','_') +  '_Total_Age.csv'
         update_last_record(age_record_file, timestamp, csvstr, header)
 
         #draw release domain total trend chart
         lines = ['Domain Total']
-        title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' ARs Total Trend'
-        save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Trend.png'
+        title = parammap['report name'].replace(' ','').replace('/','_') + ' ' + rel.replace(' ','').replace('/','_') +  ' ARs Total Trend'
+        save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ','').replace('/','_') + '_' + rel.replace(' ','').replace('/','_') +  '_ARs_Trend.png'
         grapher.draw_trent_chart(trend_ca_record_file, lines, title, 14, 4, 5, save_to_png)
         files_to_send["image"].append(save_to_png)
 
@@ -1781,17 +1781,17 @@ def releases_report(ar_obj_list, parammap, files_to_send):
         #draw CAs' actual VS target trend chart
         total_data = read_csv(trend_ca_record_file)
         age_data = read_csv(age_record_file)
-        title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' ARs Actual vs Target'
-        save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Actual_VS_Target.png'
+        title = parammap['report name'].replace(' ','').replace('/','_') + ' ' + rel.replace(' ','').replace('/','_') +  ' ARs Actual vs Target'
+        save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ','').replace('/','_') + '_' + rel.replace(' ','').replace('/','_') +  '_ARs_Actual_VS_Target.png'
         grapher.draw_target_chart(parammap["target dates"], parammap["target"], total_data['Date'].values, total_data['Domain Total'].values,
                                        age_data['Date'].values, age_data['>2 days'].values, title, 14, 4, 5, 'weekly', save_to_png)
         files_to_send["image"].append(save_to_png)
         '''
 
         #draw CAs' release trend lines all in one chart
-        title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' ARs CA Trend'
+        title = parammap['report name'].replace(' ','').replace('/','_') + ' ' + rel.replace(' ','').replace('/','_') +  ' ARs CA Trend'
         lines = cas
-        save_to_png = pngprefix + '[09]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Trend_by_CA.png'
+        save_to_png = pngprefix + '[09]' + parammap['report name'].replace(' ','').replace('/','_') + '_' + rel.replace(' ','').replace('/','_') +  '_ARs_Trend_by_CA.png'
         grapher.draw_trent_chart(trend_ca_record_file, lines, title, 14, 4, 2, save_to_png)
         files_to_send["image"].append(save_to_png)
 
@@ -1799,9 +1799,9 @@ def releases_report(ar_obj_list, parammap, files_to_send):
         for ca in cas:
             ca_ar_obj_list = ar_count_map[ca]
             if len(ca_ar_obj_list) != 0:
-                title = parammap['report name'].replace(' ', '') + ' ' + ca + ' ' + rel.replace(' ','') +' ARs by Age'
+                title = parammap['report name'].replace(' ','').replace('/','_') + ' ' + ca + ' ' + rel.replace(' ','').replace('/','_') +' ARs by Age'
                 color_set = COLOR_SETS[((parammap['releases for detail report'].index(rel))+1)%len(COLOR_SETS)]
-                save_to_png = pngprefix + '[10]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_' + ca + '_ARs_by_Age.png'
+                save_to_png = pngprefix + '[10]' + parammap['report name'].replace(' ','').replace('/','_') + '_' + rel.replace(' ','').replace('/','_') +  '_' + ca + '_ARs_by_Age.png'
                 total_age_report(ca_ar_obj_list, title, color_set, save_to_png)
                 files_to_send["image"].append(save_to_png)
 
@@ -1828,23 +1828,23 @@ def releases_trend_report(ar_obj_list, parammap, files_to_send):
             csvstr += ',' + str(len(ar_count_map[ca]))
         header = header + ',' + 'Total' + '\n'
         csvstr = csvstr + ',' + str(total) + '\n'
-        record_file = data_csvprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total.csv'
-        trend_record_file = data_csvprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_Total_Trend.csv'
+        record_file = data_csvprefix + '[08]' + parammap['report name'].replace(' ','').replace('/','_') + '_' + rel.replace(' ','').replace('/','_') +  '_Total.csv'
+        trend_record_file = data_csvprefix + '[08]' + parammap['report name'].replace(' ','').replace('/','_') + '_' + rel.replace(' ','').replace('/','_') +  '_Total_Trend.csv'
         update_last_record(record_file, timestamp, csvstr, header)
         ar_records_cnt = generate_AR_trends_report_data_file(365, record_file, trend_record_file)
 
         #draw CAs' target VS total trend chart
         ar_history_data = read_csv(trend_record_file)
-        title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' ARs Total vs Target'
-        save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Total_VS_Target.png'
+        title = parammap['report name'].replace(' ','').replace('/','_') + ' ' + rel.replace(' ','').replace('/','_') +  ' ARs Total vs Target'
+        save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ','').replace('/','_') + '_' + rel.replace(' ','').replace('/','_') +  '_ARs_Total_VS_Target.png'
         grapher.draw_target_chart(parammap["target dates"], parammap["target"], ar_history_data.Date.values, ar_history_data['Total'].values,
                                       title, 14, 4, 5, 'weekly', save_to_png)
         files_to_send["image"].append(save_to_png)
 
         #draw CAs' release trend lines all in one chart
-        title = parammap['report name'].replace(' ', '') + ' ' + rel.replace(' ', '') + ' CA ARs Trend'
+        title = parammap['report name'].replace(' ','').replace('/','_') + ' ' + rel.replace(' ','').replace('/','_') +  ' CA ARs Trend'
         lines = cas
-        save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_ARs_Trend_by_CA.png'
+        save_to_png = pngprefix + '[08]' + parammap['report name'].replace(' ','').replace('/','_') + '_' + rel.replace(' ','').replace('/','_') +  '_ARs_Trend_by_CA.png'
         grapher.draw_trent_chart(trend_record_file, lines, title, 14, 4, 2, save_to_png)
         files_to_send["image"].append(save_to_png)
 
@@ -1852,9 +1852,9 @@ def releases_trend_report(ar_obj_list, parammap, files_to_send):
         for ca in cas:
             ca_ar_obj_list = ar_count_map[ca]
             if len(ca_ar_obj_list) != 0:
-                title = ca + ' ' + rel.replace(' ','') +' ARs by Age'
+                title = ca + ' ' + rel.replace(' ','').replace('/','_') +' ARs by Age'
                 color_set = COLOR_SETS[((parammap['age report releases'].index(rel))+1)%len(COLOR_SETS)]
-                save_to_png = pngprefix + '[9]' + parammap['report name'].replace(' ', '') + '_' + rel.replace(' ', '') + '_' + ca + '_ARs_by_Age.png'
+                save_to_png = pngprefix + '[9]' + parammap['report name'].replace(' ','').replace('/','_') + '_' + rel.replace(' ','').replace('/','_') +  '_' + ca + '_ARs_by_Age.png'
                 total_age_report(ca_ar_obj_list, title, color_set, save_to_png)
                 files_to_send["image"].append(save_to_png)
 
@@ -1868,7 +1868,7 @@ def ar_blocking_report(ar_obj_list, parammap, files_to_send):
         blocking_text = refine_twod_array(blocking_text)
         title = parammap['report name'].replace(' ', '')+' Blocking or P00 ARs'
         plt, table = grapher.draw_table_first_row_colored(blocking_text, 1*len(blocking_text[0]), 0.5*len(blocking_text), 0.98, True, title, 'center', 10)
-        save_to_png = pngprefix + '[00]' + parammap['report name'].replace(' ', '') + '_ARs_Blocking.png'
+        save_to_png = pngprefix + '[00]' + parammap['report name'].replace(' ','').replace('/','_') + '_ARs_Blocking.png'
         plt.savefig(save_to_png, bbox_inches='tight')
         files_to_send["image"].append(save_to_png)
 
