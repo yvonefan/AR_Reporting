@@ -13,7 +13,8 @@
                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                         "\"Bearcat\"","\"Bearcat SP1\"",
                         "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
-                        "\"Unity 4/5\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\"", "\"Goshawk\""]
+                        "\"Unity 4/5\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\"", "\"Goshawk\"",
+                        "\"Condor SP1\"", "\"Condor SP2\"", "\"Condor SP3\""]
   },
   "reported by manager param map":{
      "Senior Manager" : [ "\"Yan, Sam\""],
@@ -29,7 +30,8 @@
                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                         "\"Bearcat\"","\"Bearcat SP1\"",
                         "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
-                        "\"Unity 4/5\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\"", "\"Goshawk\""]
+                        "\"Unity 4/5\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\"", "\"Goshawk\"",
+                        "\"Condor SP1\"", "\"Condor SP2\"", "\"Condor SP3\""]
   },
   "audit trail param map":{
       "Attribute Label":["\"Product Area\""],
@@ -42,8 +44,9 @@
                         "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                         "\"Bearcat\"","\"Bearcat SP1\"",
                         "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
-                        "\"Unity 4/5\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\"", "\"Goshawk\""],
-      "Specific Product Release":["\"Nighthawk\"", "\"Unity 4/5\"", "\"Condor\""],
+                        "\"Unity 4/5\"", "\"Nighthawk\"", "\"Osprey\"", "\"Condor\"", "\"Goshawk\"",
+                        "\"Condor SP1\"", "\"Condor SP2\"", "\"Condor SP3\""],
+      "Specific Product Release":["\"Unity 4/5\"", "\"Condor\"", "\"Goshawk\""],
       "Get AR from the begining of this year": 0
   },
   "platform domain":{
@@ -76,13 +79,14 @@
                                      "\"Liu, Andy(Yang)\"","\"Wang, Eric X\"","\"Tang, Guifeng\"","\"Chang, Rui\""],
       "Platform Services":["\"Tang, Guifeng\""]
   },
-  "releases for detail report":["Nighthawk", "Unity 4/5", "Condor"],
+  "releases for detail report":["Unity 4/5", "Condor", "\"Goshawk\""],
   "releases for total report":["\"Merlin\"", "\"Merlin SP1\"", "\"Merlin SP2\"", "\"Harrier\"", "\"Harrier SP1\"",
                               "\"Falcon\"","\"Falcon SP1\"","\"Falcon SP2\"",
                               "\"Thunderbird\"","\"Thunderbird SP1\"","\"Thunderbird SP2\"",
                               "\"Bearcat\"","\"Bearcat SP1\"",
                               "\"KittyHawk+ SP1\"","\"KittyHawk+ SP2\"", "\"KittyHawk+ SP3\"",
-                              "\"Unity 4/5\"", "\"Nighthawk\"", "\"Osprey\"", "\"Smuttynose\"", "\"Condor\"", "\"Goshawk\""],
+                              "\"Unity 4/5\"", "\"Nighthawk\"", "\"Osprey\"", "\"Smuttynose\"", "\"Condor\"", "\"Goshawk\"",
+                              "\"Condor SP1\"", "\"Condor SP2\"", "\"Condor SP3\""],
   "to":"John.Pu@emc.com;Balaji.Ramadurai@emc.com;konrad.dobkowski@emc.com;sam.yan@emc.com;Dynesy.Yuan@emc.com;Tianxin.Shao@emc.com;Leon.Li@emc.com",
   "cc":"Eric.X.Wang@emc.com",
   "bcc":"Winnie.Fan@emc.com"
