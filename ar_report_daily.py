@@ -27,7 +27,7 @@ import ar_radar_report
 import xlwt
 import warnings
 from jira import JIRA
-
+from jira.exceptions import JIRAError
 
 __author__ = "Winnie.Fan@emc.com"
 
@@ -1881,10 +1881,15 @@ def init_dir():
 def create_jira_session(parammap):
     jira_server = 'https://jira.cec.lab.emc.com:8443'
     jira_para = {'server': jira_server, 'verify': False}
+    local_jira_session = None
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        jira_session = JIRA(jira_para, basic_auth=(parammap['user'], parammap['pwd']))
-    return jira_session
+        try:
+            local_jira_session = JIRA(jira_para, basic_auth=(parammap['user'], parammap['pwd']))
+        except JIRAError as e:
+            if e.status_code == 401:
+                logger.error("Login to JIRA failed. Please check your password.")
+    return local_jira_session
 
 def main():
     start = time.clock()
