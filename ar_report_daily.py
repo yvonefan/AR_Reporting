@@ -112,8 +112,11 @@ def get_ar_obj_list(rawars, isTBV=None):
             ar_obj = generate_unity_ar_obj(ar)
             if isTBV:
                 #tbv ar from remedy has no field days_in_status, so need to calculate it here.
+                #sometimes cannot find this ar with fixed status in issue:audit_trail table, but in fact its status is already set to Fixed in remedy.
                 (items, num) = dber.get_fixed_time_from_audit_trail_with_rules(ar[1][536870921])
                 fixed_time_list = [item[1][536870929] for item in items]
+                if not len(fixed_time_list):
+                    continue
                 final_fixed_time = max(fixed_time_list)
                 days_in_status = (CUR_TIME - final_fixed_time) / (24 * 60 * 60) + 1
                 ar_obj.days_in_status = days_in_status
